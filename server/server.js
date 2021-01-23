@@ -9,6 +9,8 @@ const router = require("./router");
 const app = express();
 const port = 4000;
 
+const map = new Map();
+
 app.use(morgan("tiny"));
 app.use(cookieParser());
 app.use(express.static("build"));
@@ -59,9 +61,26 @@ server.on("upgrade", (req, socket, head) => {
 
 // After successful upgrade, we get the connection event on our websocket server
 wss.on("connection", (socket, req) => {
+  const cookie = new URLSearchParams(req.headers.cookie);
+  const user = cookie.get("username");
+
+  map.set(user, socket);
+
+  map.forEach((ws) => {
+    ws.send(`${user} has joined the chat.`);
+  });
+
   socket.on("message", (msg) => {
-    console.log(msg);
-    socket.send(msg);
+    map.forEach((ws) => {
+      ws.send(`[${user}]: ${msg}`);
+    });
+  });
+
+  socket.on("close", () => {
+    map.forEach((ws) => {
+      ws.send(`${user} has left the chat.`);
+    });
+    map.delete(user);
   });
 });
 

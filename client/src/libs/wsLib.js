@@ -1,14 +1,20 @@
 let ws;
 
+console.log(process.env.NODE_ENV);
+
 function connect() {
   if (ws) {
     ws.onerror = ws.onopen = ws.onclose = null;
     ws.close();
   }
+
   console.log(window.location.host);
-  // FIXME: Figure out how to fix this, might have to configure in package.json proxy
-  // ws = new WebSocket(`ws://${window.location}`);
-  ws = new WebSocket(`ws://localhost:4000`);
+
+  const url =
+    process.env.NODE_ENV === "production"
+      ? `ws://${window.location}`
+      : `ws://localhost:4000`;
+  ws = new WebSocket(url);
   ws.onerror = () => console.log("WebSocket error");
 
   ws.onopen = () => console.log("WebSocket connection established");

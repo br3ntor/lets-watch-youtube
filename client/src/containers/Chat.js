@@ -1,15 +1,36 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
-import "./Chat.css";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  // useCallback,
+  // useMemo,
+} from "react";
+
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import { UserContext } from "../App";
-import ws from "../libs/wsLib";
+import "./Chat.css";
 
 export default function Chat() {
   const user = useContext(UserContext);
-
-  const [message, setMessage] = useState("");
+  const [inputMessage, setMessage] = useState("");
   const [roomMessages, setRoomMessages] = useState([]);
-
   const chatBox = useRef(null);
+
+  // const socketUrl = "ws://localhost:4000";
+  const socketUrl = `ws://${window.location.hostname}:4000`;
+
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+    onOpen: () => console.log("opened"),
+    //Will attempt to reconnect on all close events, such as server shutting down
+    shouldReconnect: (closeEvent) => true,
+  });
+
+  useEffect(() => {
+    console.log("lastmessage:", lastMessage);
+    // FIXME: Do I need lastMessage && here? where did this line come from?
+    lastMessage && setRoomMessages((prev) => prev.concat(lastMessage.data));
+  }, [lastMessage]);
 
   useEffect(() => {
     chatBox.current.scrollTop = chatBox.current.scrollHeight;
@@ -19,46 +40,44 @@ export default function Chat() {
     setMessage(event.target.value);
   }
 
-  // TODO: I will need to send to server instead of this, WS will be setuphere, or call the function here at least
-  function sendMessage(event) {
+  function handleSendMessage(event) {
     event.preventDefault();
-    ws.sendMessage(message);
-    setRoomMessages([...roomMessages, { name: user.name, msg: message }]);
+
+    if (!user) {
+      console.log("Not logged in");
+      return;
+    }
+
+    sendMessage(inputMessage);
     setMessage("");
   }
 
-  function connectToChat() {
-    ws.connect();
-  }
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: "Connecting",
+    [ReadyState.OPEN]: "Open",
+    [ReadyState.CLOSING]: "Closing",
+    [ReadyState.CLOSED]: "Closed",
+    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
+  }[readyState];
 
   return (
     <div>
       <h1>WS Chat</h1>
-      <button
-        onClick={connectToChat}
-        id="wsButton"
-        type="button"
-        title="Open WebSocket connection"
-      >
-        Open WebSocket connection
-      </button>
+      <p>The WebSocket is currently {connectionStatus}</p>
       <div className="chat-container" ref={chatBox}>
-        {user && <p>{user.name} has entered the chat</p>}
         {roomMessages.map((msg, i) => (
-          <p key={i}>
-            {msg.name}: {msg.msg}
-          </p>
+          <p key={i}>{msg}</p>
         ))}
       </div>
-      <form onSubmit={sendMessage}>
+      <form onSubmit={handleSendMessage}>
         <input
           type="text"
           name="message"
           autoComplete="off"
-          value={message}
+          value={inputMessage}
           onChange={messageChanged}
         />
-        <button>Send</button>
+        <button disabled={readyState !== ReadyState.OPEN}>Send</button>
       </form>
     </div>
   );
