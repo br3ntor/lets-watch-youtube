@@ -19,7 +19,7 @@ function App(props) {
       const response = await fetch("/session");
       const data = await response.json();
       console.log(data);
-      setAuthenticatedUser({ name: data.username });
+      setAuthenticatedUser({ name: data.name });
     } catch (e) {
       console.error(e);
     }
@@ -46,7 +46,7 @@ function App(props) {
         <Link to="/chat">Chat</Link>
       </li>
       <li>
-        {/* Temp solution anyways right? */}
+        {/* FIXME: Temp solution anyways right? */}
         <a href="#" onClick={logOut}>
           Logout
         </a>

@@ -1,9 +1,9 @@
 const db = require("./postgres");
 
 function sendSession(req, res) {
-  if (req.cookies.username) {
+  if (req.session.username) {
     res.send({
-      username: req.cookies.username,
+      name: req.session.username,
     });
   } else {
     // Better to send a message?
@@ -20,27 +20,17 @@ async function handleLogin(req, res) {
     const userObject = rows[0];
 
     if (userObject && password === userObject.password) {
-      res.cookie("username", name);
+      req.session.username = name;
       res.send({ message: "Logged in as " + name });
     } else {
       res.send({ error: "User does not exist, or wrong password." });
     }
   } catch (err) {
+    // TODO: Look into the significance of this setImmediate here and if it'd be good anywhere else
+    // Look into the docs for....postgres me thinks
     setImmediate(() => {
       console.error(err);
     });
-  }
-}
-
-// FIXME: I don't think this needs to be async does it...
-async function handleLogout(req, res) {
-  try {
-    console.log(req.cookies);
-    const name = req.cookies.username;
-    res.clearCookie("username");
-    res.send({ message: `User ${name} has been logged out.` });
-  } catch (e) {
-    console.error(e);
   }
 }
 
@@ -54,7 +44,7 @@ async function handleSignup(req, res) {
 
     if (!userInDatabase) {
       await db.createNewUser(name, password);
-      res.cookie("username", name);
+      req.session.username = name;
       res.send({ message: "User created" });
     } else {
       res.send({ error: "User already exist" });
@@ -64,6 +54,24 @@ async function handleSignup(req, res) {
     setImmediate(() => {
       console.error(err);
     });
+  }
+}
+
+// FIXME: I don't think this needs to be async does it...
+async function handleLogout(req, res) {
+  try {
+    const name = req.session.username;
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+
+      res.clearCookie("connect.sid");
+      res.send({ message: `User ${name} has been logged out.` });
+    });
+  } catch (e) {
+    console.error(e);
   }
 }
 
