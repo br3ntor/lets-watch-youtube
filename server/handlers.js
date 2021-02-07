@@ -1,37 +1,36 @@
+const argon2 = require("argon2");
+
 const db = require("./postgres");
+const passport = require("./passport");
 
 function sendSession(req, res) {
-  if (req.session.username) {
-    res.send({
-      name: req.session.username,
-    });
-  } else {
-    // Better to send a message?
-    res.sendStatus(401);
+  if (!req.user) {
+    return res.sendStatus(401);
   }
+
+  res.send({
+    name: req.user.name,
+  });
 }
 
-async function handleLogin(req, res) {
-  const name = req.body.username;
-  const password = req.body.password;
-
-  try {
-    const { rows } = await db.lookupUser(name);
-    const userObject = rows[0];
-
-    if (userObject && password === userObject.password) {
-      req.session.username = name;
-      res.send({ message: "Logged in as " + name });
-    } else {
-      res.send({ error: "User does not exist, or wrong password." });
+function handleLogin(req, res, next) {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
     }
-  } catch (err) {
-    // TODO: Look into the significance of this setImmediate here and if it'd be good anywhere else
-    // Look into the docs for....postgres me thinks
-    setImmediate(() => {
-      console.error(err);
+
+    if (!user) {
+      return res.send({ error: "User does not exist, or wrong password." });
+    }
+
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.send({ message: "Logged in as " + user.name });
     });
-  }
+  })(req, res, next);
 }
 
 async function handleSignup(req, res) {
@@ -43,9 +42,19 @@ async function handleSignup(req, res) {
     const userInDatabase = rows[0];
 
     if (!userInDatabase) {
-      await db.createNewUser(name, password);
-      req.session.username = name;
-      res.send({ message: "User created" });
+      const pwHash = await argon2.hash(password);
+      const { rows } = await db.createNewUser(name, pwHash);
+      const userObj = rows[0];
+      userObj.password = "";
+      req.logIn(userObj, (err) => {
+        if (err) {
+          return next(err);
+        }
+
+        return res.send({
+          message: "User created and logged in as " + userObj.name,
+        });
+      });
     } else {
       res.send({ error: "User already exist" });
     }
@@ -57,22 +66,18 @@ async function handleSignup(req, res) {
   }
 }
 
-// FIXME: I don't think this needs to be async does it...
-async function handleLogout(req, res) {
-  try {
-    const name = req.session.username;
-    req.session.destroy((err) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-
-      res.clearCookie("connect.sid");
-      res.send({ message: `User ${name} has been logged out.` });
-    });
-  } catch (e) {
-    console.error(e);
-  }
+// I got three functions here but not sure which are necessary or in what order.
+function handleLogout(req, res) {
+  const name = req.user.name;
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    req.logout();
+    res.clearCookie("connect.sid");
+    res.send({ message: `User ${name} has been logged out.` });
+  });
 }
 
 module.exports = {

@@ -9,14 +9,13 @@ const redis = require("redis");
 let RedisStore = require("connect-redis")(session);
 let redisClient = redis.createClient();
 
-// const passport = require('passport');
-// const LocalStrategy = require('passport-local').Strategy;
-
+const passport = require("./passport");
 const router = require("./router");
 
 const app = express();
 const port = 4000;
 
+// Socket connections go in here
 const map = new Map();
 
 //
@@ -28,17 +27,15 @@ const sessionParser = session({
   saveUninitialized: false,
   secret: "$eCuRiTy",
   resave: false,
-  // cookie: { maxAge: 60000 },
+  cookie: { maxAge: 60000 * 15 },
 });
 
 app.use(morgan("tiny"));
 app.use(express.static("build"));
-// I think the docs said something like 'maybe dont use this' and I don't think I need this anymore
-// app.use(cookieParser());
-app.use(sessionParser);
-
-// Could replace with body-parser to extend functionality.
 app.use(express.json());
+app.use(sessionParser);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(router);
 
@@ -64,7 +61,7 @@ server.on("upgrade", (req, socket, head) => {
   console.log("protocol upgraded and switched from http to ws");
 
   sessionParser(req, {}, () => {
-    if (!req.session.username) {
+    if (!req.session.passport.user) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
@@ -80,7 +77,7 @@ server.on("upgrade", (req, socket, head) => {
 
 // After successful upgrade, we get the connection event on our websocket server
 wss.on("connection", (socket, req) => {
-  const user = req.session.username;
+  const user = req.session.passport.user.name;
 
   map.set(user, socket);
 
@@ -95,6 +92,7 @@ wss.on("connection", (socket, req) => {
   });
 
   socket.on("close", () => {
+    console.log(`${user} has left the chat.`);
     map.forEach((ws) => {
       ws.send(`${user} has left the chat.`);
     });
