@@ -1,24 +1,48 @@
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import Home from "./containers/Home";
-import Login from "./containers/Login";
-import Signup from "./containers/Signup";
+import LogIn from "./containers/LogIn";
+import SignUp from "./containers/SignUp";
 import Chat from "./containers/Chat";
 
-export default function Routes({ setAuthenticatedUser }) {
+import { useAuth } from "./libs/use-auth.js";
+
+export default function Routes() {
   return (
     <Switch>
       <Route path="/login">
-        <Login setUser={setAuthenticatedUser} />
+        <LogIn />
       </Route>
       <Route path="/signup">
-        <Signup setUser={setAuthenticatedUser} />
+        <SignUp />
       </Route>
-      <Route path="/chat">
+      <PrivateRoute path="/chat">
         <Chat />
-      </Route>
+      </PrivateRoute>
       <Route path="/">
         <Home />
       </Route>
     </Switch>
+  );
+}
+
+// Hoisted LOL, mad haters?
+function PrivateRoute({ children, ...rest }) {
+  const auth = useAuth();
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        auth.user ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
   );
 }

@@ -26,9 +26,9 @@ passport.use(
 );
 
 // Adds user object to the session
-// Runs on login
+// Runs on login and signup, saves session to redis, deserialize below loads from redis
 passport.serializeUser((user, cb) => {
-  // user.password = "";
+  user.password = "";
   cb(null, user);
 });
 

@@ -20,7 +20,10 @@ function handleLogin(req, res, next) {
     }
 
     if (!user) {
-      return res.send({ error: "User does not exist, or wrong password." });
+      // return res.send({ error: "User does not exist, or wrong password." });
+      return res
+        .status(401)
+        .send({ error: "User does not exist, or wrong password." });
     }
 
     req.logIn(user, (err) => {
@@ -28,7 +31,7 @@ function handleLogin(req, res, next) {
         return next(err);
       }
 
-      return res.send({ message: "Logged in as " + user.name });
+      return res.send({ id: user.id, name: user.name });
     });
   })(req, res, next);
 }
@@ -45,15 +48,16 @@ async function handleSignup(req, res) {
       const pwHash = await argon2.hash(password);
       const { rows } = await db.createNewUser(name, pwHash);
       const userObj = rows[0];
-      userObj.password = "";
       req.logIn(userObj, (err) => {
         if (err) {
           return next(err);
         }
 
-        return res.send({
-          message: "User created and logged in as " + userObj.name,
-        });
+        // FIXME: Inconsistency between the user object variable name here and above in the login function
+        return res.send({ id: userObj.id, name: userObj.name });
+        // return res.send({
+        //   message: "User created and logged in as " + userObj.name,
+        // });
       });
     } else {
       res.send({ error: "User already exist" });
@@ -68,6 +72,10 @@ async function handleSignup(req, res) {
 
 // I got three functions here but not sure which are necessary or in what order.
 function handleLogout(req, res) {
+  if (!req.user) {
+    return;
+  }
+
   const name = req.user.name;
   req.session.destroy((err) => {
     if (err) {

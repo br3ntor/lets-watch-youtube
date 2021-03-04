@@ -58,16 +58,16 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ clientTracking: false, noServer: true });
 
 server.on("upgrade", (req, socket, head) => {
-  console.log("protocol upgraded and switched from http to ws");
+  console.log("Upgrade request recieved, checking for active session...");
 
   sessionParser(req, {}, () => {
-    if (!req.session.passport.user) {
+    if (!req.session.passport?.user) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
     }
 
-    console.log("Session is parsed!");
+    console.log("Session found, connecting to chat...");
 
     wss.handleUpgrade(req, socket, head, (ws) => {
       wss.emit("connection", ws, req);
@@ -77,10 +77,13 @@ server.on("upgrade", (req, socket, head) => {
 
 // After successful upgrade, we get the connection event on our websocket server
 wss.on("connection", (socket, req) => {
+  // FIXME: I think I need to take off name here, put whole user object in the map
+  // and call name below when I need to
   const user = req.session.passport.user.name;
 
   map.set(user, socket);
 
+  console.log(`${user} has joined the chat.`);
   map.forEach((ws) => {
     ws.send(`${user} has joined the chat.`);
   });

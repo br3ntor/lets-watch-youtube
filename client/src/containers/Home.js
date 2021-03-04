@@ -1,12 +1,13 @@
-import React, { useContext } from "react";
-import { UserContext } from "../App";
+import React from "react";
+
+import { useAuth } from "../libs/use-auth.js";
 
 console.log("Home imported");
 
 export default function Home() {
   console.log("Home rendered.");
 
-  const user = useContext(UserContext);
+  const { user } = useAuth();
 
   return (
     <main id="home">
