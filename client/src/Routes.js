@@ -9,18 +9,24 @@ import { useAuth } from "./libs/use-auth.js";
 export default function Routes() {
   return (
     <Switch>
-      <Route path="/login">
-        <LogIn />
+      <Route exact path="/">
+        <Home />
       </Route>
+      <UnauthenticatedRoute path="/login">
+        <LogIn />
+      </UnauthenticatedRoute>
+      {/* <Route path="/login">
+        <LogIn />
+      </Route> */}
       <Route path="/signup">
         <SignUp />
       </Route>
       <PrivateRoute path="/chat">
         <Chat />
       </PrivateRoute>
-      <Route path="/">
+      {/* <Route path="/">
         <Home />
-      </Route>
+      </Route> */}
     </Switch>
   );
 }
@@ -38,6 +44,28 @@ function PrivateRoute({ children, ...rest }) {
           <Redirect
             to={{
               pathname: "/login",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
+// FIXME: Fix this overly complicated flow...I think
+function UnauthenticatedRoute({ children, ...rest }) {
+  const auth = useAuth();
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        !auth.user ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: location.state?.from.pathname || "/",
               state: { from: location },
             }}
           />

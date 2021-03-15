@@ -25,9 +25,6 @@ import ChatIcon from "@material-ui/icons/Chat";
 import { useAuth } from "../libs/use-auth.js";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    // flexGrow: 1,
-  },
   menuButton: {
     marginRight: theme.spacing(2),
   },
@@ -36,12 +33,20 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     width: 250,
+    "& > a": {
+      color: theme.palette.text.primary,
+      textDecoration: "none",
+    },
   },
   buttons: {
     "& > *": {
       margin: theme.spacing(1),
       textDecoration: "inherit",
     },
+  },
+  text: {
+    color: theme.palette.text.primary,
+    textDecoration: "none",
   },
 }));
 

@@ -9,12 +9,8 @@ import { ProvideAuth } from "./libs/use-auth.js";
 
 const useStyles = makeStyles((theme) => ({
   main: {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-  },
-  ul: {
-    margin: 0,
+    // display: "flex",
+    // flexDirection: "column",
   },
 }));
 
@@ -32,5 +28,7 @@ export default function App() {
   );
 }
 
-// TODO: Figure how how to send this down through all routes, that is, unless I use the hooks I guess?
+// TODO: Figure how how to send this down through all routes,
+// that is, unless I use the hooks I guess? I wonder how I can
+// pass those around...hmmm
 // export default withRouter(App);

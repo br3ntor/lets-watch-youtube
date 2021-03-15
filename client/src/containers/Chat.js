@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import ReactPlayer from "react-player";
 
 import MessageField from "../components/MessageField";
 
@@ -12,50 +13,59 @@ import { useAuth } from "../libs/use-auth.js";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    flexGrow: 1,
-    // height: "calc(100vh - theme.mixins.toolbar["@media (min-width:600px)"].minHeight)",
-    // height: "calc(100vh - 64px)",
+    height: `calc(100vh - 64px)`,
+    // Fix for ReactPlayer creating overflow when loading in youtube video
+    overflow: "hidden",
     [theme.breakpoints.down("md")]: {
       flexDirection: "column",
     },
   },
   video: {
-    flexGrow: 4,
+    flexGrow: 1,
     background: "lightblue",
-    [theme.breakpoints.down("md")]: {
-      flexGrow: 1,
-    },
   },
+
   chat: {
     display: "flex",
     flexDirection: "column",
-    height: "calc(100vh - 64px)",
-    flexGrow: 1,
-    // background: "lightgreen",
+    width: "460px",
     [theme.breakpoints.down("md")]: {
-      flexGrow: 3,
+      height: "70%",
+      width: "unset",
     },
   },
   paper: {
     margin: theme.spacing(1),
     flexGrow: 1,
     overflow: "auto",
+    wordBreak: "break-all",
   },
 }));
 
+// TODO: Can I force a refresh if websocket fails to connect? That might be nice.
 export default function Chat() {
   const [inputMessage, setMessage] = useState("");
   const [roomMessages, setRoomMessages] = useState([]);
   const chatBox = useRef(null);
+  const videoBox = useRef(null);
   const classes = useStyles();
   const { user } = useAuth();
 
   const socketUrl = `ws://${window.location.hostname}:4000`;
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+  // react-use-websocket hook
+  // https://github.com/robtaussig/react-use-websocket#api
+  // https://github.com/robtaussig/react-use-websocket#options
+  const {
+    // sendMessage,
+    lastMessage,
+    readyState,
+    sendJsonMessage,
+  } = useWebSocket(socketUrl, {
     onOpen: () => console.log("opened"),
-    //Will attempt to reconnect on all close events, such as server shutting down
-    shouldReconnect: (closeEvent) => true,
+    shouldReconnect: () => true,
+    reconnectAttempts: 5,
+    onReconnectStop: () => window.location.reload(),
   });
 
   useEffect(() => {
@@ -80,8 +90,20 @@ export default function Chat() {
       return;
     }
 
-    sendMessage(inputMessage);
+    sendJsonMessage({ chat: inputMessage });
     setMessage("");
+  }
+
+  function syncPlay() {
+    sendJsonMessage({ play: true });
+  }
+
+  function syncPause() {
+    sendJsonMessage({ play: false });
+  }
+
+  function sendTime(prog) {
+    sendJsonMessage(prog);
   }
 
   const connectionStatus = {
@@ -95,15 +117,17 @@ export default function Chat() {
   return (
     <div className={classes.root}>
       <div className={classes.video}>
-        <iframe
-          title="poopy"
+        <ReactPlayer
+          ref={videoBox}
+          onPlay={syncPlay}
+          onPause={syncPause}
+          onProgress={sendTime}
+          progressInterval={5000}
+          controls
+          url="https://www.youtube.com/watch?v=-ZVZgCrHy5E"
           width="100%"
           height="100%"
-          src="https://www.youtube.com/embed/y8mAWYVwfEc"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+        />
       </div>
       <div className={classes.chat}>
         <Paper elevation={0} className={classes.paper} ref={chatBox}>

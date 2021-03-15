@@ -36,7 +36,6 @@ app.use(express.json());
 app.use(sessionParser);
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(router);
 
 /**
@@ -88,10 +87,23 @@ wss.on("connection", (socket, req) => {
     ws.send(`${user} has joined the chat.`);
   });
 
-  socket.on("message", (msg) => {
-    map.forEach((ws) => {
-      ws.send(`[${user}]: ${msg}`);
-    });
+  socket.on("message", (clientMessage) => {
+    const msg = JSON.parse(clientMessage);
+
+    if (msg.hasOwnProperty("chat")) {
+      console.log(msg);
+      map.forEach((ws) => {
+        ws.send(`[${user}]: ${msg.chat}`);
+      });
+    }
+
+    if (msg.hasOwnProperty("play")) {
+      console.log(msg);
+    }
+
+    if (msg.hasOwnProperty("playedSeconds")) {
+      console.log(msg);
+    }
   });
 
   socket.on("close", () => {

@@ -60,6 +60,7 @@ async function handleSignup(req, res) {
         // });
       });
     } else {
+      // I think I can make this into a early return, might read a bit better
       res.send({ error: "User already exist" });
     }
   } catch (err) {

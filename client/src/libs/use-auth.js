@@ -104,5 +104,6 @@ function useProvideAuth() {
     signin,
     signup,
     signout,
+    getSession,
   };
 }
