@@ -38,8 +38,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LogIn() {
-  console.log("Login component rendered");
-
   const [loading, setLoading] = useState(false);
   const [fields, handleFieldChange] = useFormFields({
     username: "",
@@ -56,7 +54,8 @@ export default function LogIn() {
     try {
       await auth.signin(fields.username, fields.password);
       // FIXME: Is replace a better method to use than push?
-      history.push("/");
+      const path = history.location.pathname || "/";
+      history.push(path);
     } catch (err) {
       console.error(err);
     }

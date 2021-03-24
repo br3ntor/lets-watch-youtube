@@ -80,7 +80,7 @@ export default function MenuAppBar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="" color="default">
+      <AppBar position="static" color="default">
         <Toolbar>
           <IconButton
             edge="start"
@@ -153,7 +153,7 @@ export default function MenuAppBar() {
               <ListItemText primary="Home" />
             </ListItem>
           </Link>
-          <Link to="/chat">
+          <Link to="/chat/test">
             <ListItem button onClick={toggleMenu}>
               <ListItemIcon>
                 <ChatIcon />

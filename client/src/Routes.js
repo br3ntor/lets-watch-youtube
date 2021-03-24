@@ -2,7 +2,7 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import Home from "./containers/Home";
 import LogIn from "./containers/LogIn";
 import SignUp from "./containers/SignUp";
-import Chat from "./containers/Chat";
+import Room from "./containers/Room";
 
 import { useAuth } from "./libs/use-auth.js";
 
@@ -15,18 +15,12 @@ export default function Routes() {
       <UnauthenticatedRoute path="/login">
         <LogIn />
       </UnauthenticatedRoute>
-      {/* <Route path="/login">
-        <LogIn />
-      </Route> */}
       <Route path="/signup">
         <SignUp />
       </Route>
-      <PrivateRoute path="/chat">
-        <Chat />
+      <PrivateRoute path="/room/:room">
+        <Room />
       </PrivateRoute>
-      {/* <Route path="/">
-        <Home />
-      </Route> */}
     </Switch>
   );
 }

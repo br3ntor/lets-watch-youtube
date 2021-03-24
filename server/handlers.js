@@ -3,6 +3,8 @@ const argon2 = require("argon2");
 const db = require("./postgres");
 const passport = require("./passport");
 
+const roomObj = require("./rooms");
+
 function sendSession(req, res) {
   if (!req.user) {
     return res.sendStatus(401);
@@ -10,6 +12,7 @@ function sendSession(req, res) {
 
   res.send({
     name: req.user.name,
+    id: req.user.id,
   });
 }
 
@@ -89,9 +92,27 @@ function handleLogout(req, res) {
   });
 }
 
+// Prob need to make this an authenticated route
+function createRoom(req, res) {
+  // Room id will be the last section of the uuid from the host/user that created the room
+  const roomID = req.user.id.split("-").slice(-1)[0];
+
+  // Add a room to the rooms object
+  roomObj.createRoom(roomID);
+
+  // Make sure it's there, might not need
+  if (roomObj.rooms.hasOwnProperty(roomID)) {
+    res.send(roomID);
+  } else {
+    res.send("Something went wrong creating the room.");
+  }
+  // res.send(room.rooms.hasOwnProperty(roomID));
+}
+
 module.exports = {
   sendSession,
   handleLogin,
   handleLogout,
   handleSignup,
+  createRoom,
 };

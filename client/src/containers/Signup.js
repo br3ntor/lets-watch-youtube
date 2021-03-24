@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp(props) {
+export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [fields, handleFieldChange] = useFormFields({
     username: "",

@@ -1,6 +1,6 @@
 const express = require("express");
 const http = require("http");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const WebSocket = require("ws");
 const session = require("express-session");
@@ -16,7 +16,8 @@ const app = express();
 const port = 4000;
 
 // Socket connections go in here
-const map = new Map();
+// const map = new Map();
+const roomObj = require("./rooms");
 
 //
 // We need the same instance of the session parser in express and
@@ -27,7 +28,7 @@ const sessionParser = session({
   saveUninitialized: false,
   secret: "$eCuRiTy",
   resave: false,
-  cookie: { maxAge: 60000 * 15 },
+  cookie: { maxAge: 60000 * 30 },
 });
 
 app.use(morgan("tiny"));
@@ -60,8 +61,20 @@ server.on("upgrade", (req, socket, head) => {
   console.log("Upgrade request recieved, checking for active session...");
 
   sessionParser(req, {}, () => {
-    if (!req.session.passport?.user) {
+    const user = req.session?.passport?.user;
+    const roomID = req.url.slice(1);
+    const room = roomObj.rooms[roomID];
+
+    if (!user) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+      socket.destroy();
+      return;
+    }
+
+    // If I restart server, the room object is destroyed but the session remains valid because redis
+    // These are only seperate because it seemed easier to test manually, could combine with an ||
+    if (!room) {
+      socket.write("HTTP/1.1 401 Hello\r\n\r\n");
       socket.destroy();
       return;
     }
@@ -74,44 +87,76 @@ server.on("upgrade", (req, socket, head) => {
   });
 });
 
-// After successful upgrade, we get the connection event on our websocket server
+// After successful upgrade, we get the connection event from our websocket server
 wss.on("connection", (socket, req) => {
-  // FIXME: I think I need to take off name here, put whole user object in the map
-  // and call name below when I need to
-  const user = req.session.passport.user.name;
+  console.log("Connected to wss!");
+  // Should I put the whole user object in the map as a key?
+  // That doesn't sound right (although I think I can do that)
+  const userName = req.session.passport.user.name;
+  const userID = req.session.passport.user.id;
+  const roomID = req.url.slice(1);
+  const currentRoom = roomObj.rooms[roomID];
 
-  map.set(user, socket);
+  currentRoom.users.set(userName, socket);
+  console.log(roomObj.rooms);
+  console.log(`${userName} has joined the chat.`);
 
-  console.log(`${user} has joined the chat.`);
-  map.forEach((ws) => {
-    ws.send(`${user} has joined the chat.`);
+  const usersInCurrentRoom = Array.from(currentRoom.users.keys());
+  socket.send(JSON.stringify({ users: usersInCurrentRoom }));
+
+  // map.set(user, socket);
+
+  currentRoom.users.forEach((ws) => {
+    // ws.send(`${userName} has joined the chat.`);
+    // ws.send(JSON.stringify({ connected: `${userName} has joined the chat` }));
+    ws.send(JSON.stringify({ connected: userName }));
   });
 
+  // clientMessage properties are type of message
+  // chat message or video data to send to clients to sync
   socket.on("message", (clientMessage) => {
     const msg = JSON.parse(clientMessage);
 
     if (msg.hasOwnProperty("chat")) {
-      console.log(msg);
-      map.forEach((ws) => {
-        ws.send(`[${user}]: ${msg.chat}`);
+      currentRoom.users.forEach((ws) => {
+        ws.send(JSON.stringify({ username: userName, chat: msg.chat }));
       });
     }
 
-    if (msg.hasOwnProperty("play")) {
-      console.log(msg);
-    }
+    // These command messages can only be performed by the creator of the room
+    const lastSegmentOfUserId = userID.split("-").slice(-1)[0];
+    if (roomID === lastSegmentOfUserId) {
+      if (msg.hasOwnProperty("play")) {
+        currentRoom.users.forEach((ws) => {
+          ws.send(JSON.stringify(msg));
+        });
+      }
 
-    if (msg.hasOwnProperty("playedSeconds")) {
-      console.log(msg);
+      if (msg.hasOwnProperty("playedSeconds")) {
+        currentRoom.users.forEach((ws) => {
+          ws.send(JSON.stringify({ currentTime: msg.playedSeconds }));
+        });
+        // console.log(msg);
+      }
     }
   });
 
   socket.on("close", () => {
-    console.log(`${user} has left the chat.`);
-    map.forEach((ws) => {
-      ws.send(`${user} has left the chat.`);
+    console.log(`${userName} has left the chat.`);
+    currentRoom.users.delete(userName);
+
+    currentRoom.users.forEach((ws) => {
+      // ws.send(`${userName} has left the chat.`);
+      ws.send(
+        JSON.stringify({ disconnected: `${userName} has left the chat` })
+      );
     });
-    map.delete(user);
+
+    // Rooms don't get cleaned up here because it can nuke
+    // the room if I just want to refresh. I'll think about
+    // cleanup here later.
+
+    // TL;DR: Rooms stick around on the room object forever
   });
 });
 

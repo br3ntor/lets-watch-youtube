@@ -1,54 +1,53 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
-import Grid from "@material-ui/core/Grid";
+import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+import { useAuth } from "../libs/use-auth.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "calc(100vh - 64px)",
-  },
-  video: {
-    backgroundColor: "green",
-  },
-  chat: {
-    backgroundColor: "purple",
-    [theme.breakpoints.down("md")]: {
-      // height: "70%",
-      // width: "unset",
-    },
+    padding: "25px",
+    textAlign: "center",
   },
 }));
 
 export default function Home() {
+  const { user } = useAuth();
   const classes = useStyles();
+  const history = useHistory();
+
+  async function createRoom(event) {
+    event.preventDefault();
+
+    try {
+      const response = await fetch("/createroom");
+      const room = await response.text();
+      console.log(room);
+      history.push(`/room/${room}`);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   return (
-    <Grid container component="main" className={classes.root}>
-      <Grid className={classes.video} item xs={12} sm={9}>
-        <h1>Video</h1>
-      </Grid>
-      <Grid className={classes.chat} xs={12} item sm={3}>
-        <h1>Chat</h1>
-      </Grid>
-    </Grid>
+    <Container className={classes.root} maxWidth="sm">
+      {user ? (
+        <>
+          <h1>Hello {user.name}</h1>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={createRoom}
+          >
+            Create Room
+          </Button>
+        </>
+      ) : (
+        <h1>Welcome, please sign in.</h1>
+      )}
+    </Container>
   );
 }
-
-// import React from "react";
-
-// import { useAuth } from "../libs/use-auth.js";
-
-// console.log("Home imported");
-
-// export default function Home() {
-//   console.log("Home rendered.");
-
-//   const { user } = useAuth();
-
-//   return (
-//     <main id="home">
-//       <h1>Home Page</h1>
-//       {user ? <p>Hello {user.name}</p> : <p>I don't know you.</p>}
-//     </main>
-//   );
-// }
