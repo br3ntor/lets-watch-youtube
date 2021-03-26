@@ -9,7 +9,7 @@ function sendSession(req, res) {
   if (!req.user) {
     return res.sendStatus(401);
   }
-
+  console.log(req.session.cookie._expires);
   res.send({
     name: req.user.name,
     id: req.user.id,

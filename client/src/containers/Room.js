@@ -48,6 +48,9 @@ export default function Room() {
   const history = useHistory();
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [videoUrl, setVideoUrl] = useState(
+    "https://www.youtube.com/watch?v=TEJMdMwMJCs"
+  );
 
   const socketUrl = `ws://${window.location.hostname}:4000/${room}`;
 
@@ -76,6 +79,7 @@ export default function Room() {
     }
   );
 
+  // TODO: Change some of these names, like lastJsonMessage.connected doesn't reflect that its a string of a username
   useEffect(() => {
     console.log("lastJsonMessage", lastJsonMessage);
 
@@ -92,7 +96,23 @@ export default function Room() {
         }
       }
 
-      // users prop comes on the object sent on connection
+      if (lastJsonMessage.hasOwnProperty("disconnected")) {
+        setRoomMessages((prev) =>
+          prev.concat(`${lastJsonMessage.disconnected} has disconnected.`)
+        );
+
+        // Skip if connected message is for user since I get that on initial connection
+        if (lastJsonMessage.disconnected !== user.name) {
+          setMembers((prev) => {
+            const leavingUser = prev.indexOf(lastJsonMessage.disconnected);
+            const updatedList = [...prev];
+            updatedList.splice(leavingUser, 1);
+            return updatedList;
+          });
+        }
+      }
+
+      // users prop comes on the object sent on connection or disconnect
       if (lastJsonMessage.hasOwnProperty("users")) {
         setMembers(lastJsonMessage.users);
       }
@@ -120,6 +140,11 @@ export default function Room() {
           console.log("Video synced to within 2 seconds.");
         }
       }
+
+      // Revieve and set video url
+      if (lastJsonMessage.videoUrl) {
+        setVideoUrl(lastJsonMessage.videoUrl);
+      }
     }
   }, [lastJsonMessage, userIsHost, user]);
 
@@ -135,7 +160,11 @@ export default function Room() {
       return;
     }
 
-    sendJsonMessage({ chat: inputMessage });
+    // sendJsonMessage({ chat: inputMessage });
+    sendJsonMessage({
+      type: "chat",
+      data: inputMessage,
+    });
     setMessage("");
   }
 
@@ -153,6 +182,14 @@ export default function Room() {
 
   function sendTime(prog) {
     sendJsonMessage(prog);
+  }
+
+  function sendVideoUrl(url) {
+    if (userIsHost) {
+      sendJsonMessage({
+        videoUrl: url,
+      });
+    }
   }
 
   const connectionStatus = {
@@ -174,7 +211,7 @@ export default function Room() {
           playing={isPlaying}
           progressInterval={5000}
           controls
-          url="https://www.youtube.com/watch?v=K2yOM2MlOxY"
+          url={videoUrl}
           width="100%"
           height="100%"
         />
@@ -188,6 +225,7 @@ export default function Room() {
           inputMessage={inputMessage}
           messageChanged={messageChanged}
           members={members}
+          sendVideoUrl={sendVideoUrl}
         />
       </div>
     </div>

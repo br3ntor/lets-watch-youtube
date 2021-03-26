@@ -12,8 +12,11 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
+import Input from "@material-ui/core/Input";
 
 import MessageField from "./MessageField";
+
+import { useFormFields } from "../libs/use-formFields";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -74,17 +77,29 @@ export default function SimpleTabs({
   messageChanged,
   handleSendMessage,
   members,
+  sendVideoUrl,
+  // setVideoUrl,
 }) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const chatBox = useRef(null);
+  const [fields, handleFieldChange] = useFormFields({ videourl: "" });
 
   useEffect(() => {
-    chatBox.current.scrollTop = chatBox.current.scrollHeight;
+    if (chatBox.current) {
+      chatBox.current.scrollTop = chatBox.current.scrollHeight;
+    }
   }, [roomMessages]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleVideoChange = (event, wtf) => {
+    event.preventDefault();
+    console.log(event);
+    console.log(wtf);
+    sendVideoUrl(fields.videourl);
   };
 
   return (
@@ -123,10 +138,26 @@ export default function SimpleTabs({
         />
       </TabPanel>
       <TabPanel value={value} index={1} className={classes.tabpanel}>
-        {members && members.map((m) => <p>{m}</p>)}
+        {members && members.map((m, i) => <p key={i}>{m}</p>)}
       </TabPanel>
       <TabPanel value={value} index={2} className={classes.tabpanel}>
-        Item Three
+        <form
+          className={classes.root}
+          noValidate
+          autoComplete="off"
+          onSubmit={handleVideoChange}
+        >
+          <Input
+            placeholder="Media URL"
+            inputProps={{
+              "aria-label": "description",
+            }}
+            id="videourl"
+            fullWidth
+            onChange={handleFieldChange}
+            value={fields.url}
+          />
+        </form>
       </TabPanel>
     </>
   );

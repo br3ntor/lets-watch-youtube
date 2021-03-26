@@ -90,8 +90,7 @@ server.on("upgrade", (req, socket, head) => {
 // After successful upgrade, we get the connection event from our websocket server
 wss.on("connection", (socket, req) => {
   console.log("Connected to wss!");
-  // Should I put the whole user object in the map as a key?
-  // That doesn't sound right (although I think I can do that)
+
   const userName = req.session.passport.user.name;
   const userID = req.session.passport.user.id;
   const roomID = req.url.slice(1);
@@ -101,42 +100,47 @@ wss.on("connection", (socket, req) => {
   console.log(roomObj.rooms);
   console.log(`${userName} has joined the chat.`);
 
+  // Get a list of all users in the room and send to the client that just connected
   const usersInCurrentRoom = Array.from(currentRoom.users.keys());
   socket.send(JSON.stringify({ users: usersInCurrentRoom }));
 
-  // map.set(user, socket);
-
   currentRoom.users.forEach((ws) => {
-    // ws.send(`${userName} has joined the chat.`);
-    // ws.send(JSON.stringify({ connected: `${userName} has joined the chat` }));
     ws.send(JSON.stringify({ connected: userName }));
   });
 
-  // clientMessage properties are type of message
-  // chat message or video data to send to clients to sync
   socket.on("message", (clientMessage) => {
-    const msg = JSON.parse(clientMessage);
+    const socketMessage = JSON.parse(clientMessage);
 
-    if (msg.hasOwnProperty("chat")) {
+    // Not sure if I should use this object type strategy or
+    // just find what I need with the hasOwnProperty method like below
+    // if (msg.hasOwnProperty("chat")) {
+    if (socketMessage.type === "chat") {
       currentRoom.users.forEach((ws) => {
-        ws.send(JSON.stringify({ username: userName, chat: msg.chat }));
+        ws.send(
+          JSON.stringify({ username: userName, chat: socketMessage.data })
+        );
       });
     }
 
-    // These command messages can only be performed by the creator of the room
+    // These video controls messages can only be performed by the creator/host of the room
     const lastSegmentOfUserId = userID.split("-").slice(-1)[0];
     if (roomID === lastSegmentOfUserId) {
-      if (msg.hasOwnProperty("play")) {
+      if (socketMessage.hasOwnProperty("play")) {
         currentRoom.users.forEach((ws) => {
-          ws.send(JSON.stringify(msg));
+          ws.send(JSON.stringify(socketMessage));
         });
       }
 
-      if (msg.hasOwnProperty("playedSeconds")) {
+      if (socketMessage.hasOwnProperty("playedSeconds")) {
         currentRoom.users.forEach((ws) => {
-          ws.send(JSON.stringify({ currentTime: msg.playedSeconds }));
+          ws.send(JSON.stringify({ currentTime: socketMessage.playedSeconds }));
         });
-        // console.log(msg);
+      }
+
+      if (socketMessage.videoUrl) {
+        currentRoom.users.forEach((ws) => {
+          ws.send(JSON.stringify({ videoUrl: socketMessage.videoUrl }));
+        });
       }
     }
   });
@@ -146,10 +150,7 @@ wss.on("connection", (socket, req) => {
     currentRoom.users.delete(userName);
 
     currentRoom.users.forEach((ws) => {
-      // ws.send(`${userName} has left the chat.`);
-      ws.send(
-        JSON.stringify({ disconnected: `${userName} has left the chat` })
-      );
+      ws.send(JSON.stringify({ disconnected: userName }));
     });
 
     // Rooms don't get cleaned up here because it can nuke
@@ -163,6 +164,6 @@ wss.on("connection", (socket, req) => {
 //
 // Start the server.
 //
-server.listen(port, function () {
+server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });

@@ -82,6 +82,7 @@ export default function SignUp() {
             autoComplete="username"
             autoFocus
             onChange={handleFieldChange}
+            value={fields.username}
           />
           <TextField
             variant="outlined"
@@ -94,6 +95,7 @@ export default function SignUp() {
             id="password"
             autoComplete="current-password"
             onChange={handleFieldChange}
+            value={fields.password}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
