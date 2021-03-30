@@ -1,6 +1,5 @@
 const express = require("express");
 const http = require("http");
-// const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const WebSocket = require("ws");
 const session = require("express-session");
@@ -16,7 +15,6 @@ const app = express();
 const port = 4000;
 
 // Socket connections go in here
-// const map = new Map();
 const roomObj = require("./rooms");
 
 //
@@ -102,7 +100,12 @@ wss.on("connection", (socket, req) => {
 
   // Get a list of all users in the room and send to the client that just connected
   const usersInCurrentRoom = Array.from(currentRoom.users.keys());
-  socket.send(JSON.stringify({ users: usersInCurrentRoom }));
+  socket.send(
+    JSON.stringify({
+      users: usersInCurrentRoom,
+      video: currentRoom.video,
+    })
+  );
 
   currentRoom.users.forEach((ws) => {
     ws.send(JSON.stringify({ connected: userName }));
@@ -138,6 +141,7 @@ wss.on("connection", (socket, req) => {
       }
 
       if (socketMessage.videoUrl) {
+        currentRoom.video = socketMessage.videoUrl;
         currentRoom.users.forEach((ws) => {
           ws.send(JSON.stringify({ videoUrl: socketMessage.videoUrl }));
         });

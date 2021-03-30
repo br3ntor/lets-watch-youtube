@@ -1,8 +1,8 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SendIcon from "@material-ui/icons/Send";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -10,41 +10,38 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       margin: theme.spacing(1),
     },
-    message: {
-      width: "100%",
-    },
   },
 }));
 
-export default function MessageField({
-  inputMessage,
-  messageChanged,
-  handleSendMessage,
-}) {
+export default function MessageField({ sendMessage }) {
+  const [message, setMessage] = useState("");
   const classes = useStyles();
+
+  function handleChange(event) {
+    setMessage(event.target.value);
+  }
 
   return (
     <form
       className={classes.root}
       noValidate
       autoComplete="off"
-      onSubmit={handleSendMessage}
+      onSubmit={(event) => {
+        event.preventDefault();
+        sendMessage(message);
+        setMessage("");
+      }}
     >
       <TextField
         fullWidth
         id="outlined-basic"
         name="message"
         label="Message"
-        value={inputMessage}
-        onChange={messageChanged}
+        value={message}
+        onChange={handleChange}
         variant="outlined"
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.button}
-        type="submit"
-      >
+      <Button variant="contained" color="primary" type="submit">
         <SendIcon />
       </Button>
     </form>

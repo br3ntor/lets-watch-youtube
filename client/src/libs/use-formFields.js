@@ -8,10 +8,11 @@ export function useFormFields(initialState) {
     function (event) {
       setValues({
         ...fields,
-        [event.target.id]: event.target.value,
+        [event.target.name]: event.target.value,
       });
     },
   ];
 }
 
-// FIXME: I might consider changing event.target.id to event.target.name instead
+// I'm not sure which is better event.target.id or event.target.name
+// The id of a form is also used with the for attribute, just a thought

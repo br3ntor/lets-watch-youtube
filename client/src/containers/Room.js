@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
-
+import { useState, useRef, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import ReactPlayer from "react-player";
 import { makeStyles } from "@material-ui/core/styles";
 
-import Chat from "../components/Chat";
+import Tabs from "../components/Tabs";
 import { useAuth } from "../libs/use-auth.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
   chat: {
     display: "flex",
     flexDirection: "column",
+    width: 375,
     [theme.breakpoints.down("md")]: {
       height: "70%",
       width: "unset",
@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Room() {
-  const [inputMessage, setMessage] = useState("");
   const [roomMessages, setRoomMessages] = useState([]);
   const [members, setMembers] = useState([]);
   const videoBox = useRef(null);
@@ -47,10 +46,8 @@ export default function Room() {
   const { room } = useParams();
   const history = useHistory();
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [videoUrl, setVideoUrl] = useState(
-    "https://www.youtube.com/watch?v=TEJMdMwMJCs"
-  );
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [videoUrl, setVideoUrl] = useState("");
 
   const socketUrl = `ws://${window.location.hostname}:4000/${room}`;
 
@@ -115,6 +112,7 @@ export default function Room() {
       // users prop comes on the object sent on connection or disconnect
       if (lastJsonMessage.hasOwnProperty("users")) {
         setMembers(lastJsonMessage.users);
+        setVideoUrl(lastJsonMessage.video);
       }
 
       if (lastJsonMessage.hasOwnProperty("chat")) {
@@ -148,24 +146,16 @@ export default function Room() {
     }
   }, [lastJsonMessage, userIsHost, user]);
 
-  function messageChanged(event) {
-    setMessage(event.target.value);
-  }
-
-  function handleSendMessage(event) {
-    event.preventDefault();
-
+  function sendMessage(message) {
     if (!user) {
       console.log("Not logged in");
       return;
     }
 
-    // sendJsonMessage({ chat: inputMessage });
     sendJsonMessage({
       type: "chat",
-      data: inputMessage,
+      data: message,
     });
-    setMessage("");
   }
 
   /**
@@ -214,17 +204,21 @@ export default function Room() {
           url={videoUrl}
           width="100%"
           height="100%"
+          // config={{
+          //   youtube: {
+          //     playerVars: {
+          //       autoplay: 1,
+          //     },
+          //   },
+          // }}
         />
       </div>
       <div className={classes.chat}>
-        <Chat
+        <Tabs
           connectionStatus={connectionStatus}
           roomMessages={roomMessages}
-          handleSendMessage={handleSendMessage}
-          sendJsonMessage={sendJsonMessage}
-          inputMessage={inputMessage}
-          messageChanged={messageChanged}
           members={members}
+          sendMessage={sendMessage}
           sendVideoUrl={sendVideoUrl}
         />
       </div>

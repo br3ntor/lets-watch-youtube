@@ -144,11 +144,8 @@ export default function MenuAppBar() {
           )}
         </Toolbar>
       </AppBar>
-      {/* A second toolbar component to push main content down because of fixed appbar */}
-      {/* <Toolbar /> */}
       <Drawer anchor="left" open={drawerOpen} onClose={toggleMenu}>
         <List className={classes.list}>
-          {/* Not sure if link should be at this level but it works! */}
           <Link to="/">
             <ListItem button onClick={toggleMenu}>
               <ListItemIcon>
