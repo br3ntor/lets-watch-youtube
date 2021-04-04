@@ -5,6 +5,7 @@ const {
   handleSignup,
   handleLogout,
   createRoom,
+  getRooms,
 } = require("./handlers");
 
 // Auth
@@ -14,5 +15,6 @@ router.post("/login", handleLogin);
 router.post("/signup", handleSignup);
 
 router.get("/createroom", createRoom);
+router.get("/getrooms", getRooms);
 
 module.exports = router;

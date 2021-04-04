@@ -106,7 +106,23 @@ function createRoom(req, res) {
   } else {
     res.send("Something went wrong creating the room.");
   }
-  // res.send(room.rooms.hasOwnProperty(roomID));
+}
+
+// The map data type
+// I want to change my rooms into a room object so this will
+// be changing soon
+function getRooms(req, res) {
+  const rooms = [];
+
+  for (const roomID in roomObj.rooms) {
+    rooms.push({
+      id: roomID,
+      users: Array.from(roomObj.rooms[roomID].users.keys()),
+      video: roomObj.rooms[roomID].video,
+    });
+  }
+
+  res.send(rooms);
 }
 
 module.exports = {
@@ -115,4 +131,5 @@ module.exports = {
   handleLogout,
   handleSignup,
   createRoom,
+  getRooms,
 };

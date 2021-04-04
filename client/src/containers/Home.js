@@ -1,53 +1,52 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import Container from "@material-ui/core/Container";
-import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+
+import RoomGrid from "../components/RoomGrid.";
+import CreateRoom from "../components/CreateRoom";
 import { useAuth } from "../libs/use-auth.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "25px",
-    textAlign: "center",
+    // paddingTop: theme.spacing(8),
+    // paddingBottom: theme.spacing(8),
+    // textAlign: "center",
   },
 }));
 
 export default function Home() {
+  const [rooms, setRooms] = useState(false);
   const { user } = useAuth();
   const classes = useStyles();
-  const history = useHistory();
 
-  async function createRoom(event) {
-    event.preventDefault();
+  useEffect(() => {
+    getRooms();
+  }, []);
 
+  async function getRooms() {
     try {
-      const response = await fetch("/createroom");
-      const room = await response.text();
-      console.log(room);
-      history.push(`/room/${room}`);
+      const response = await fetch("/getrooms");
+      const rooms = await response.json();
+      console.log(rooms);
+      setRooms(rooms);
     } catch (e) {
       console.error(e);
     }
   }
 
   return (
-    <Container className={classes.root} maxWidth="sm">
+    <Container className={classes.root} maxWidth="md">
       {user ? (
         <>
           <h1>Hello {user.name}</h1>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={createRoom}
-          >
-            Create Room
-          </Button>
+          <CreateRoom />
         </>
       ) : (
         <h1>Welcome, please sign in.</h1>
       )}
+      {rooms && <RoomGrid rooms={rooms} />}
     </Container>
   );
 }
