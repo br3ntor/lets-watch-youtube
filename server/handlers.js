@@ -58,9 +58,6 @@ async function handleSignup(req, res) {
 
         // FIXME: Inconsistency between the user object variable name here and above in the login function
         return res.send({ id: userObj.id, name: userObj.name });
-        // return res.send({
-        //   message: "User created and logged in as " + userObj.name,
-        // });
       });
     } else {
       // I think I can make this into a early return, might read a bit better

@@ -35,8 +35,3 @@ export default function App() {
     </ThemeProvider>
   );
 }
-
-// TODO: Figure how how to send this down through all routes,
-// that is, unless I use the hooks I guess? I wonder how I can
-// pass those around...hmmm
-// export default withRouter(App);

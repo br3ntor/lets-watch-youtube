@@ -32,7 +32,7 @@ passport.serializeUser((user, cb) => {
   cb(null, user);
 });
 
-// Takes user from session and puts on request
+// Takes user from session(in redis) and puts on request body
 // Runs on refresh/request when session is valid
 // Note: For now I'm just keeping some data on the redis session,
 // another option (maybe better) is to only store the id then

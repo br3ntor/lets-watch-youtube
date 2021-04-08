@@ -204,13 +204,6 @@ export default function Room() {
           url={videoUrl}
           width="100%"
           height="100%"
-          // config={{
-          //   youtube: {
-          //     playerVars: {
-          //       autoplay: 1,
-          //     },
-          //   },
-          // }}
         />
       </div>
       <div className={classes.chat}>
