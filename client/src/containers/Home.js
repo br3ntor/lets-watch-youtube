@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -17,25 +15,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home() {
-  const [rooms, setRooms] = useState(false);
   const { user } = useAuth();
   const classes = useStyles();
-
-  useEffect(() => {
-    getRooms();
-  }, []);
-
-  // FIXME: Move this to the RoomGrid component I think
-  async function getRooms() {
-    try {
-      const response = await fetch("/getrooms");
-      const rooms = await response.json();
-      console.log(rooms);
-      setRooms(rooms);
-    } catch (e) {
-      console.error(e);
-    }
-  }
 
   return (
     <Container className={classes.root} maxWidth="md">
@@ -47,7 +28,7 @@ export default function Home() {
       ) : (
         <h1>Welcome, please sign in.</h1>
       )}
-      {rooms && <RoomGrid rooms={rooms} />}
+      <RoomGrid />
     </Container>
   );
 }
