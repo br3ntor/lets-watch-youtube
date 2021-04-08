@@ -98,7 +98,11 @@ function createRoom(req, res) {
   const roomID = req.user.id.split("-").slice(-1)[0];
 
   // Add a room to the rooms object
-  roomObj.createRoom(roomID);
+  roomObj.createRoom({
+    id: roomID,
+    name: "Cool Room",
+    video: "https://www.youtube.com/watch?v=9t4inYcCO9w",
+  });
 
   // Make sure it's there, might not need
   if (roomObj.rooms.hasOwnProperty(roomID)) {
@@ -108,17 +112,16 @@ function createRoom(req, res) {
   }
 }
 
-// The map data type
-// I want to change my rooms into a room object so this will
-// be changing soon
 function getRooms(req, res) {
   const rooms = [];
 
   for (const roomID in roomObj.rooms) {
+    const r = roomObj.rooms[roomID];
     rooms.push({
       id: roomID,
-      users: Array.from(roomObj.rooms[roomID].users.keys()),
-      video: roomObj.rooms[roomID].video,
+      name: r.name,
+      users: Array.from(r.users.keys()),
+      video: r.video,
     });
   }
 

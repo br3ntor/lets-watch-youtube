@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 
-import RoomGrid from "../components/RoomGrid.";
+import RoomGrid from "../components/RoomGrid";
 import CreateRoom from "../components/CreateRoom";
 import { useAuth } from "../libs/use-auth.js";
 
@@ -25,6 +25,7 @@ export default function Home() {
     getRooms();
   }, []);
 
+  // FIXME: Move this to the RoomGrid component I think
   async function getRooms() {
     try {
       const response = await fetch("/getrooms");

@@ -1,21 +1,19 @@
-// Replace this primitive, yet it works, structure with a room class
+class Room {
+  constructor(name, video = "https://www.youtube.com/watch?v=FK5MdhdYdJw") {
+    this.name = name;
+    this.video = video;
+    this.users = new Map();
+  }
+}
+
 const rooms = {
-  default1: {
-    users: new Map(),
-    video: "https://www.youtube.com/watch?v=1JYjcwW9MmM",
-  },
-  default2: {
-    users: new Map(),
-    video: "https://youtu.be/--UABwqW9Sg",
-  },
+  default1: new Room("A Test Room", "https://youtu.be/E8mGWYRcmec"),
+  default2: new Room("Another Test Room"),
+  default3: new Room("One More Test Room"),
 };
 
-function createRoom(id) {
-  rooms[id] = {
-    users: new Map(),
-    video:
-      "https://www.youtube.com/watch?v=EHqsCmfTDmI&list=PLPnjato8iGXLQbppBPhOny8XLSRl7S5pM",
-  };
+function createRoom({ id, name, video }) {
+  rooms[id] = new Room(name, video);
 }
 
 function deleteRoom(id) {
