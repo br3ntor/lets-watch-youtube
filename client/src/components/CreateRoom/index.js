@@ -23,7 +23,7 @@ export default function SimpleModal() {
         size="large"
         onClick={handleOpen}
       >
-        Create Room
+        New Room
       </Button>
       <Modal
         open={open}

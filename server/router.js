@@ -14,7 +14,7 @@ router.get("/logout", handleLogout);
 router.post("/login", handleLogin);
 router.post("/signup", handleSignup);
 
-router.get("/createroom", createRoom);
+router.post("/createroom", createRoom); // This needs to be authenticated
 router.get("/getrooms", getRooms);
 
 module.exports = router;

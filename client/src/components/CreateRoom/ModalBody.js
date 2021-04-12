@@ -1,9 +1,11 @@
 import { useHistory } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
-// import Typography from "@material-ui/core/Typography";
-// import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
+
+import { useFormFields } from "../../libs/use-formFields";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -17,16 +19,25 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: `translate(-50%, -50%)`,
   },
+  form: {},
 }));
 
 export default function ModalBody() {
   const history = useHistory();
   const classes = useStyles();
+  const [fields, handleFieldChange] = useFormFields("");
 
   async function createRoom(event) {
     event.preventDefault();
     try {
-      const response = await fetch("/createroom");
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(fields),
+      };
+      const response = await fetch("/createroom", options);
       const room = await response.text();
       console.log(room);
       history.push(`/room/${room}`);
@@ -37,18 +48,22 @@ export default function ModalBody() {
 
   return (
     <div className={classes.paper}>
-      <h2 id="simple-modal-title">Create Room</h2>
-      <p id="simple-modal-description">
-        Gotta put a form here to add name to room object
-      </p>
-      <Button
-        variant="contained"
-        color="primary"
-        size="large"
-        onClick={createRoom}
-      >
-        Actually Create Room
-      </Button>
+      <Typography component="h1" variant="h5">
+        Room details:
+      </Typography>
+      <form className={classes.form} onSubmit={createRoom}>
+        <TextField
+          id="name"
+          label="Room Name"
+          margin="normal"
+          fullWidth
+          name="name"
+          onChange={handleFieldChange}
+        />
+        <Button type="submit" variant="contained" color="primary" size="large">
+          Create Room
+        </Button>
+      </form>
     </div>
   );
 }

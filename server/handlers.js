@@ -23,7 +23,6 @@ function handleLogin(req, res, next) {
     }
 
     if (!user) {
-      // return res.send({ error: "User does not exist, or wrong password." });
       return res
         .status(401)
         .send({ error: "User does not exist, or wrong password." });
@@ -44,25 +43,25 @@ async function handleSignup(req, res) {
   const password = req.body.password;
 
   try {
-    const { rows } = await db.lookupUser(name);
-    const userInDatabase = rows[0];
+    const { rows: rA } = await db.lookupUser(name);
+    const userInDatabase = rA[0];
 
-    if (!userInDatabase) {
-      const pwHash = await argon2.hash(password);
-      const { rows } = await db.createNewUser(name, pwHash);
-      const userObj = rows[0];
-      req.logIn(userObj, (err) => {
-        if (err) {
-          return next(err);
-        }
-
-        // FIXME: Inconsistency between the user object variable name here and above in the login function
-        return res.send({ id: userObj.id, name: userObj.name });
-      });
-    } else {
-      // I think I can make this into a early return, might read a bit better
-      res.send({ error: "User already exist" });
+    if (userInDatabase) {
+      res.send({ error: "Username already exist" });
+      throw new Error("Username already exists.");
     }
+
+    const pwHash = await argon2.hash(password);
+    const { rows: rB } = await db.createNewUser(name, pwHash);
+    const newUser = rB[0];
+
+    req.logIn(newUser, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      return res.send({ id: newUser.id, name: newUser.name });
+    });
   } catch (err) {
     // This setImmediate comes from node-postgres examples in the docs
     setImmediate(() => {
@@ -71,7 +70,6 @@ async function handleSignup(req, res) {
   }
 }
 
-// I got three functions here but not sure which are necessary or in what order.
 function handleLogout(req, res) {
   if (!req.user) {
     return;
@@ -83,6 +81,7 @@ function handleLogout(req, res) {
       console.log(err);
       return;
     }
+    // I got three functions here but not sure which are necessary or in what order.
     req.logout();
     res.clearCookie("connect.sid");
     res.send({ message: `User ${name} has been logged out.` });
@@ -97,7 +96,7 @@ function createRoom(req, res) {
   // Add a room to the rooms object
   roomObj.createRoom({
     id: roomID,
-    name: "Cool Room",
+    name: req.body.name,
     video: "https://www.youtube.com/watch?v=9t4inYcCO9w",
   });
 

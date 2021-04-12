@@ -154,7 +154,7 @@ export default function MenuAppBar() {
               <ListItemText primary="Home" />
             </ListItem>
           </Link>
-          <Link to="/chat/test">
+          <Link to="/room/default1">
             <ListItem button onClick={toggleMenu}>
               <ListItemIcon>
                 <ChatIcon />
