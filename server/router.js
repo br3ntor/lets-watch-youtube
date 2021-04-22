@@ -1,18 +1,18 @@
 const router = require("express").Router();
 const {
-  sendSession,
-  handleLogin,
-  handleSignup,
-  handleLogout,
+  session,
+  signup,
+  login,
+  logout,
   createRoom,
   getRooms,
-} = require("./handlers");
+} = require("./routeHandlers");
 
 // Auth
-router.get("/session", sendSession);
-router.get("/logout", handleLogout);
-router.post("/login", handleLogin);
-router.post("/signup", handleSignup);
+router.get("/session", session);
+router.get("/logout", logout);
+router.post("/login", login);
+router.post("/signup", signup);
 
 router.post("/createroom", createRoom); // This needs to be authenticated
 router.get("/getrooms", getRooms);

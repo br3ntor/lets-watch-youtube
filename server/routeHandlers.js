@@ -5,7 +5,11 @@ const passport = require("./passport");
 
 const roomObj = require("./rooms");
 
-function sendSession(req, res) {
+/**
+ * Checks for valid session and returns the user
+ * object attached to session or a 401 message
+ */
+function session(req, res) {
   if (!req.user) {
     return res.sendStatus(401);
   }
@@ -16,7 +20,7 @@ function sendSession(req, res) {
   });
 }
 
-function handleLogin(req, res, next) {
+function login(req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       return next(err);
@@ -38,7 +42,7 @@ function handleLogin(req, res, next) {
   })(req, res, next);
 }
 
-async function handleSignup(req, res) {
+async function signup(req, res) {
   const name = req.body.username;
   const password = req.body.password;
 
@@ -64,13 +68,15 @@ async function handleSignup(req, res) {
     });
   } catch (err) {
     // This setImmediate comes from node-postgres examples in the docs
+    // Found this info too:
+    // https://nodejs.org/dist/latest-v14.x/docs/api/events.html#events_asynchronous_vs_synchronous
     setImmediate(() => {
       console.error(err);
     });
   }
 }
 
-function handleLogout(req, res) {
+function logout(req, res) {
   if (!req.user) {
     return;
   }
@@ -125,10 +131,10 @@ function getRooms(req, res) {
 }
 
 module.exports = {
-  sendSession,
-  handleLogin,
-  handleLogout,
-  handleSignup,
+  session,
+  signup,
+  login,
+  logout,
   createRoom,
   getRooms,
 };
