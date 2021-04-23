@@ -38,14 +38,6 @@ app.use(passport.session());
 app.use(router);
 
 /**
- * Whoa dude, whats going on? I don't need this? I'm such a noob :(
- */
-// Hmm I guess all 404's can just be handled on the client if I do this?
-// app.get("*", (req, res) => {
-//   res.sendFile("/build/index.html", { root: __dirname });
-// });
-
-/**
  * Create an HTTP server.
  */
 const server = http.createServer(app);
