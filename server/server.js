@@ -24,7 +24,7 @@ const roomObj = require("./rooms");
 const sessionParser = session({
   store: new RedisStore({ client: redisClient }),
   saveUninitialized: false,
-  secret: "$eCuRiTy",
+  secret: "$eCuRiTy", // Hover over secret key for popup info for prod
   resave: false,
   cookie: { maxAge: 60000 * 30 },
 });

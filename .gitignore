@@ -27,3 +27,5 @@ TODO
 
 start-server.sh
 .vscode
+Docker
+docker-compose.yml
