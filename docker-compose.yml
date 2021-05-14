@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  lets-watch:
+    build:
+      context: .
+    ports:
+      - 4000:4000
+    env_file: .env
+
+  redis:
+    image: redis:6-alpine
+
+  postgres:
+    image: postgres:13-alpine
+    env_file: .env.db
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgresdb:/var/lib/postgresql/data
+      # - ./postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgresdb:

@@ -6,7 +6,7 @@ const session = require("express-session");
 const redis = require("redis");
 
 let RedisStore = require("connect-redis")(session);
-let redisClient = redis.createClient();
+let redisClient = redis.createClient(6379, "redis");
 
 const passport = require("./passport");
 const router = require("./router");
@@ -163,3 +163,22 @@ wss.on("connection", (socket, req) => {
 server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
+
+const gracefulShutdown = () => {
+  console.log("Starting shutdown of express...");
+
+  wss.close(() => {
+    console.log("Wss shut down!");
+
+    redisClient.quit(() => {
+      console.log("Redis client shut down!");
+
+      server.close(() => {
+        console.log("Express shut down!");
+      });
+    });
+  });
+};
+
+process.on("SIGTERM", gracefulShutdown);
+process.on("SIGINT", gracefulShutdown);
