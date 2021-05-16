@@ -43,7 +43,7 @@ export default function RoomCard({ roomID, users, video, name }) {
       </CardContent>
       <CardActions>
         <Link to={`/room/${roomID}`} className={classes.link}>
-          <Button size="small">Join Room {roomID}</Button>
+          <Button size="small">Join Room</Button>
         </Link>
       </CardActions>
     </Card>

@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import Chat from "./Chat";
 import VideoControls from "./VideoControls";
+import MembersList from "./Members";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -99,7 +100,7 @@ export default function SimpleTabs({
         />
       </TabPanel>
       <TabPanel value={value} index={1} className={classes.tabpanel}>
-        {members && members.map((m, i) => <p key={i}>{m}</p>)}
+        <MembersList members={members} />
       </TabPanel>
       <TabPanel value={value} index={2} className={classes.tabpanel}>
         <VideoControls sendVideoUrl={sendVideoUrl} />

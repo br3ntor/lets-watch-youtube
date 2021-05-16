@@ -6,6 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { useFormFields } from "../../libs/use-formFields";
+import { useAuth } from "../../libs/use-auth.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -25,7 +26,10 @@ const useStyles = makeStyles((theme) => ({
 export default function ModalBody() {
   const history = useHistory();
   const classes = useStyles();
-  const [fields, handleFieldChange] = useFormFields("");
+  const { user } = useAuth();
+  const [fields, handleFieldChange] = useFormFields({
+    name: `${user.name}'s Room`,
+  });
 
   async function createRoom(event) {
     event.preventDefault();
@@ -58,6 +62,7 @@ export default function ModalBody() {
           margin="normal"
           fullWidth
           name="name"
+          value={fields.name}
           onChange={handleFieldChange}
         />
         <Button type="submit" variant="contained" color="primary" size="large">

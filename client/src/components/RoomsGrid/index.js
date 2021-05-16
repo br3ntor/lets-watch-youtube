@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function RoomGrid() {
+export default function RoomsGrid() {
   const [rooms, setRooms] = useState(false);
 
   const classes = useStyles();
