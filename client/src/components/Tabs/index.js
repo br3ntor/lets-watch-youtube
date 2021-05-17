@@ -69,6 +69,8 @@ export default function SimpleTabs({
   roomMessages,
   sendMessage,
   sendVideoUrl,
+  playlist,
+  setPlaylist,
 }) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
@@ -103,7 +105,11 @@ export default function SimpleTabs({
         <MembersList members={members} />
       </TabPanel>
       <TabPanel value={value} index={2} className={classes.tabpanel}>
-        <VideoControls sendVideoUrl={sendVideoUrl} />
+        <VideoControls
+          sendVideoUrl={sendVideoUrl}
+          playlist={playlist}
+          setPlaylist={setPlaylist}
+        />
       </TabPanel>
     </>
   );

@@ -48,6 +48,7 @@ export default function Room() {
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [videoUrl, setVideoUrl] = useState("");
+  const [playlist, setPlaylist] = useState([]);
 
   const socketUrl = `ws://${window.location.hostname}:4000/${room}`;
 
@@ -139,7 +140,7 @@ export default function Room() {
         }
       }
 
-      // Revieve and set video url
+      // Receive and set video url
       if (lastJsonMessage.videoUrl) {
         setVideoUrl(lastJsonMessage.videoUrl);
       }
@@ -182,6 +183,12 @@ export default function Room() {
     }
   }
 
+  function nextVideo(e) {
+    const url = playlist[0];
+    sendVideoUrl(url);
+    setPlaylist((pl) => pl.slice(1));
+  }
+
   const connectionStatus = {
     [ReadyState.CONNECTING]: "Connecting",
     [ReadyState.OPEN]: "Open",
@@ -198,6 +205,7 @@ export default function Room() {
           onPlay={userIsHost && sendPlay}
           onPause={userIsHost && sendPause}
           onProgress={userIsHost && sendTime}
+          onEnded={userIsHost && nextVideo}
           playing={isPlaying}
           progressInterval={5000}
           controls
@@ -213,6 +221,8 @@ export default function Room() {
           members={members}
           sendMessage={sendMessage}
           sendVideoUrl={sendVideoUrl}
+          playlist={playlist}
+          setPlaylist={setPlaylist}
         />
       </div>
     </div>

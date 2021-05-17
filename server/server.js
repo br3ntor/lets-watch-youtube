@@ -26,7 +26,7 @@ const sessionParser = session({
   saveUninitialized: false,
   secret: "$eCuRiTy", // Hover over secret key for popup info for prod
   resave: false,
-  cookie: { maxAge: 60000 * 30 },
+  cookie: { maxAge: 60000 * 120 },
 });
 
 app.use(morgan("tiny"));
