@@ -1,5 +1,5 @@
 const express = require("express");
-const http = require("http");
+const http = require(process.env.NODE_ENV === "production" ? "https" : "http");
 const morgan = require("morgan");
 const WebSocket = require("ws");
 const session = require("express-session");

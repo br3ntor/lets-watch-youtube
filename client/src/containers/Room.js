@@ -50,7 +50,8 @@ export default function Room() {
   const [videoUrl, setVideoUrl] = useState("");
   const [playlist, setPlaylist] = useState([]);
 
-  const socketUrl = `ws://${window.location.hostname}:4000/${room}`;
+  const protocol = process.env.NODE_ENV === "production" ? "wss" : "ws";
+  const socketUrl = `${protocol}://${window.location.hostname}:4000/${room}`;
 
   const userIsHost =
     user.id.split("-").slice(-1)[0] ===
