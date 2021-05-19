@@ -51,7 +51,8 @@ export default function Room() {
   const [playlist, setPlaylist] = useState([]);
 
   const protocol = process.env.NODE_ENV === "production" ? "wss" : "ws";
-  const socketUrl = `${protocol}://${window.location.hostname}:4000/${room}`;
+  const port = process.env.NODE_ENV === "production" ? "" : ":4000";
+  const socketUrl = `${protocol}://${window.location.hostname}${port}/${room}`;
 
   const userIsHost =
     user.id.split("-").slice(-1)[0] ===
@@ -68,6 +69,7 @@ export default function Room() {
     socketUrl,
     {
       onOpen: () => console.log("opened"),
+      onError: (e) => console.error(e),
       shouldReconnect: () => true,
       reconnectAttempts: 1,
       onReconnectStop: () => {
