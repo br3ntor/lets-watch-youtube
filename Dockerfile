@@ -6,6 +6,7 @@ COPY ["client/package.json", "client/package-lock.json*", "./"]
 RUN npm install --production
 COPY client/ .
 RUN npm run build
+RUN rm -rf ./build/static/js/*.map
 
 FROM node:16-alpine
 WORKDIR /app

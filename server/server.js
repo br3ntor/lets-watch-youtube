@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const WebSocket = require("ws");
 const session = require("express-session");
 const redis = require("redis");
+const helmet = require("helmet");
 
 let RedisStore = require("connect-redis")(session);
 let redisClient = redis.createClient(6379, "redis");
@@ -21,14 +22,34 @@ const roomObj = require("./rooms");
 // We need the same instance of the session parser in express and
 // WebSocket server.
 //
-const sessionParser = session({
+const seshOptions = {
   store: new RedisStore({ client: redisClient }),
   saveUninitialized: false,
-  secret: "$eCuRiTy", // Hover over secret key for popup info for prod
+  secret: process.env.SESSION_SECRET, // Hover over secret key for popup info for prod
   resave: false,
   cookie: { maxAge: 60000 * 120 },
-});
+  name: process.env.SESSION_NAME,
+};
 
+if (app.get("env") === "production") {
+  app.set("trust proxy", 1); // trust first proxy
+  seshOptions.cookie.secure = true; // serve secure cookies
+}
+
+const sessionParser = session(seshOptions);
+
+// app.use(helmet());
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     useDefaults: true,
+//     // reportOnly: true,
+//     directives: {
+//       "script-src": ["'self'", "'unsafe-inline'", "www.youtube.com"],
+//       "style-src": ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+//       "frame-src": ["'self'", "www.youtube.com", "youtube.com"],
+//     },
+//   })
+// );
 app.use(morgan("tiny"));
 app.use(express.static("build"));
 app.use(express.json());
