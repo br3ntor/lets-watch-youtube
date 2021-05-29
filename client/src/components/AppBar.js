@@ -15,6 +15,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 // MUI Icons
 import HomeIcon from "@material-ui/icons/Home";
@@ -57,6 +58,10 @@ export default function MenuAppBar() {
 
   const { user, signout } = useAuth();
   const history = useHistory();
+
+  // Is this the way?
+  const matches = useMediaQuery("(min-width:600px)");
+  const buttonSize = matches ? "medium" : "small";
 
   const open = Boolean(anchorEl);
 
@@ -133,10 +138,12 @@ export default function MenuAppBar() {
           ) : (
             <div className={classes.buttons}>
               <Link to="/signup">
-                <Button variant="contained">Sign up</Button>
+                <Button variant="contained" size={buttonSize}>
+                  Sign up
+                </Button>
               </Link>
               <Link to="/login">
-                <Button variant="contained" color="primary">
+                <Button variant="contained" color="primary" size={buttonSize}>
                   Log in
                 </Button>
               </Link>

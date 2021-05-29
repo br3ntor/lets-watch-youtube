@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import RoomsGrid from "../components/RoomsGrid";
 import CreateRoom from "../components/CreateRoom";
 import { useAuth } from "../libs/use-auth.js";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,8 +20,16 @@ export default function Home() {
     <Container className={classes.root} maxWidth="md">
       {user ? (
         <>
-          <h1>Hello {user.name}</h1>
-          <CreateRoom />
+          <h1>
+            Welcome{" "}
+            <Box component="span" color="primary.main">
+              {user.name}
+            </Box>
+            , you may join a room or create your own.
+          </h1>
+          <Box textAlign="center" m={4}>
+            <CreateRoom />
+          </Box>
         </>
       ) : (
         <h1>Welcome, please sign in.</h1>

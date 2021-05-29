@@ -7,8 +7,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
+// import Grid from "@material-ui/core/Grid";
+// import Link from "@material-ui/core/Link";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -80,7 +80,7 @@ export default function LogIn() {
             label="Username"
             name="username"
             autoComplete="username"
-            autoFocus
+            // autoFocus
             onChange={handleFieldChange}
             value={fields.username}
           />
@@ -111,7 +111,7 @@ export default function LogIn() {
           >
             {!loading ? "Log In" : <CircularProgress size={24} />}
           </Button>
-          <Grid container>
+          {/* <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
                 Forgot password?
@@ -122,7 +122,7 @@ export default function LogIn() {
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
-          </Grid>
+          </Grid> */}
         </form>
       </div>
     </Container>

@@ -9,7 +9,7 @@ class Room {
 const rooms = {
   default1: new Room(
     "Default-1: NBC News Live",
-    "https://www.youtube.com/watch?v=OOOng1jMBvQ"
+    "https://www.youtube.com/watch?v=Xh2DSMH2Z10"
   ),
   default2: new Room("Default-2: Sky News Live"),
   default3: new Room("Default-3: Sky News Live"),
