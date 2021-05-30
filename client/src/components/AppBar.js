@@ -161,14 +161,16 @@ export default function MenuAppBar() {
               <ListItemText primary="Home" />
             </ListItem>
           </Link>
-          <Link to="/room/default1">
-            <ListItem button onClick={toggleMenu}>
-              <ListItemIcon>
-                <ChatIcon />
-              </ListItemIcon>
-              <ListItemText primary="Chat" />
-            </ListItem>
-          </Link>
+          {user?.room && (
+            <Link to={`/room/${user.room}`}>
+              <ListItem button onClick={toggleMenu}>
+                <ListItemIcon>
+                  <ChatIcon />
+                </ListItemIcon>
+                <ListItemText primary="My Room" />
+              </ListItem>
+            </Link>
+          )}
         </List>
       </Drawer>
     </div>

@@ -16,21 +16,40 @@ export default function Home() {
   const { user } = useAuth();
   const classes = useStyles();
 
+  const roomNotCreated = ({ name }) => (
+    <>
+      <h1>
+        Welcome{" "}
+        <Box component="span" color="primary.main">
+          {name}
+        </Box>
+        , you may join a room or create your own.
+      </h1>
+      <Box textAlign="center" m={4}>
+        <CreateRoom />
+      </Box>
+    </>
+  );
+
+  const roomCreated = ({ name }) => (
+    <h1>
+      Welcome back{" "}
+      <Box component="span" color="primary.main">
+        {name}
+      </Box>
+      .
+    </h1>
+  );
+
   return (
     <Container className={classes.root} maxWidth="md">
+      {/* lol this code, I wrote this haha */}
       {user ? (
-        <>
-          <h1>
-            Welcome{" "}
-            <Box component="span" color="primary.main">
-              {user.name}
-            </Box>
-            , you may join a room or create your own.
-          </h1>
-          <Box textAlign="center" m={4}>
-            <CreateRoom />
-          </Box>
-        </>
+        user?.room ? (
+          roomCreated(user)
+        ) : (
+          roomNotCreated(user)
+        )
       ) : (
         <h1>Welcome, please sign in.</h1>
       )}

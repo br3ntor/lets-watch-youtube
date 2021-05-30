@@ -22,8 +22,13 @@ function useProvideAuth() {
   const getSession = async () => {
     try {
       const response = await fetch("/session");
+
+      if (!response.ok) {
+        console.log("Session not found.");
+        return;
+      }
+
       const data = await response.json();
-      console.log(data);
       setUser(data);
     } catch (e) {
       console.error(e);
@@ -101,6 +106,7 @@ function useProvideAuth() {
   // Return the user object and auth methods
   return {
     user,
+    setUser,
     signin,
     signup,
     signout,

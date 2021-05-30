@@ -80,7 +80,7 @@ export default function LogIn() {
             label="Username"
             name="username"
             autoComplete="username"
-            // autoFocus
+            autoFocus
             onChange={handleFieldChange}
             value={fields.username}
           />

@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ModalBody() {
   const history = useHistory();
   const classes = useStyles();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [fields, handleFieldChange] = useFormFields({
     name: `${user.name}'s Room`,
   });
@@ -44,6 +44,9 @@ export default function ModalBody() {
       const response = await fetch("/createroom", options);
       const room = await response.text();
       console.log(room);
+      setUser((prev) => {
+        return { ...prev, room: room };
+      });
       history.push(`/room/${room}`);
     } catch (e) {
       console.error(e);
