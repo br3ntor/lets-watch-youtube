@@ -5,6 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import RoomCard from "./RoomCard";
 import { useAuth } from "../../libs/use-auth.js";
 
+import getVideoData from "../../libs/youtube";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -55,12 +57,30 @@ export default function RoomsGrid() {
     }
   }, [rooms, user, setUser]);
 
+  useEffect(() => {
+    if (Object.keys(rooms).length > 0) {
+      console.log("Make Youtube API call for pics, title, etc.", rooms);
+      const videoIDs = rooms.map((r) => {
+        const url = new URL(r.video);
+
+        if (url.host === "youtu.be") {
+          return url.pathname.slice(1);
+        }
+
+        const videoParam = url.searchParams;
+        return videoParam.get("v");
+      });
+      console.log(videoIDs);
+      getVideoData(videoIDs).then((data) => console.log(data));
+    }
+  }, [rooms]);
+
   return (
     <div className={classes.root}>
       <Grid container spacing={4}>
         {rooms &&
           rooms.map((r, i) => (
-            <Grid item key={i} xs={12} sm={6} md={4}>
+            <Grid item key={i} xs={12} sm={6} md={4} lg={3}>
               <RoomCard
                 className={classes.card}
                 users={r.users}

@@ -54,11 +54,9 @@ export default function Room() {
   const port = window.location.hostname === "localhost" ? ":4000" : "";
   const socketUrl = `${protocol}://${window.location.hostname}${port}/${room}`;
 
+  // history.location.pathname.split("/").slice(-1)[0]
   const userIsHost =
-    user.id.split("-").slice(-1)[0] ===
-    history.location.pathname.split("/").slice(-1)[0]
-      ? true
-      : undefined;
+    user.id.split("-").slice(-1)[0] === room ? true : undefined;
 
   /**
    * react-use-websocket hook
@@ -88,22 +86,21 @@ export default function Room() {
     if (lastJsonMessage && Object.keys(lastJsonMessage).length > 0) {
       if (lastJsonMessage.hasOwnProperty("connected")) {
         setRoomMessages((prev) =>
-          prev.concat(`${lastJsonMessage.connected} has connected.`)
+          prev.concat(`${lastJsonMessage.connected.name} has connected.`)
         );
 
         // Skip if connected message is for user since I get that on initial connection
-        if (lastJsonMessage.connected !== user.name) {
+        if (lastJsonMessage.connected.name !== user.name) {
           setMembers((prev) => prev.concat(lastJsonMessage.connected));
         }
       }
 
       if (lastJsonMessage.hasOwnProperty("disconnected")) {
         setRoomMessages((prev) =>
-          prev.concat(`${lastJsonMessage.disconnected} has disconnected.`)
+          prev.concat(`${lastJsonMessage.disconnected.name} has disconnected.`)
         );
 
-        // Skip if connected message is for user since I get that on initial connection
-        if (lastJsonMessage.disconnected !== user.name) {
+        if (lastJsonMessage.disconnected.name !== user.name) {
           setMembers((prev) => {
             const leavingUser = prev.indexOf(lastJsonMessage.disconnected);
             const updatedList = [...prev];
@@ -113,12 +110,14 @@ export default function Room() {
         }
       }
 
+      // This happens when entering chat, happens first.
       // users prop comes on the object sent on connection or disconnect
       if (lastJsonMessage.hasOwnProperty("users")) {
         setMembers(lastJsonMessage.users);
         setVideoUrl(lastJsonMessage.video);
       }
 
+      // Might need to send this data as an object so I can Style it better in JSX component
       if (lastJsonMessage.hasOwnProperty("chat")) {
         setRoomMessages((prev) =>
           prev.concat(`[${lastJsonMessage.username}]: ${lastJsonMessage.chat}`)

@@ -29,6 +29,7 @@ export default function ModalBody() {
   const { user, setUser } = useAuth();
   const [fields, handleFieldChange] = useFormFields({
     name: `${user.name}'s Room`,
+    url: "",
   });
 
   async function createRoom(event) {
@@ -67,6 +68,17 @@ export default function ModalBody() {
           name="name"
           value={fields.name}
           onChange={handleFieldChange}
+          required
+        />
+        <TextField
+          id="url"
+          label="Media URL"
+          margin="normal"
+          fullWidth
+          name="url"
+          value={fields.url}
+          onChange={handleFieldChange}
+          required
         />
         <Button type="submit" variant="contained" color="primary" size="large">
           Create Room

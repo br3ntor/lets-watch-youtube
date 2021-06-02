@@ -1,5 +1,5 @@
 class Room {
-  constructor(name, video = "https://www.youtube.com/watch?v=9Auq9mYxFEE") {
+  constructor(name, video) {
     this.name = name;
     this.video = video;
     this.users = new Map();
@@ -8,11 +8,11 @@ class Room {
 
 const rooms = {
   default1: new Room(
-    "Default-1: NBC News Live",
-    "https://www.youtube.com/watch?v=Xh2DSMH2Z10"
+    "Default room",
+    "https://www.youtube.com/watch?v=OvqJGBopcwc"
   ),
-  default2: new Room("Default-2: Sky News Live"),
-  default3: new Room("Default-3: Sky News Live"),
+  // default2: new Room("Default-2: Sky News Live"),
+  // default3: new Room("Default-3: Sky News Live"),
 };
 
 function createRoom({ id, name, video }) {

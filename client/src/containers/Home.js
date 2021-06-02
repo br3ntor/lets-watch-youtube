@@ -42,7 +42,7 @@ export default function Home() {
   );
 
   return (
-    <Container className={classes.root} maxWidth="md">
+    <Container className={classes.root} maxWidth="lg">
       {/* lol this code, I wrote this haha */}
       {user ? (
         user?.room ? (

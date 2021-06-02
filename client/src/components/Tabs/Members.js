@@ -20,9 +20,18 @@ export default function SimpleList({ members }) {
         {members.map((m, i) => (
           <ListItem key={i}>
             <ListItemIcon>
-              <FaceIcon />
+              <FaceIcon
+                // Hmm is it better to use react-router's history hook here? I don't know!
+                color={
+                  window.location.pathname.includes(
+                    m.id.split("-").slice(-1)[0]
+                  )
+                    ? "primary"
+                    : ""
+                }
+              />
             </ListItemIcon>
-            <ListItemText primary={m} />
+            <ListItemText primary={m.name} />
           </ListItem>
         ))}
       </List>

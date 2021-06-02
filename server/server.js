@@ -102,13 +102,13 @@ server.on("upgrade", (req, socket, head) => {
 wss.on("connection", (socket, req) => {
   console.log("Connected to wss!");
 
-  const userName = req.session.passport.user.name;
-  const userID = req.session.passport.user.id;
+  const user = req.session.passport.user;
+  const userName = user.name;
+  const userID = user.id;
   const roomID = req.url.slice(1);
   const currentRoom = roomObj.rooms[roomID];
 
-  currentRoom.users.set(userName, socket);
-  console.log(roomObj.rooms);
+  currentRoom.users.set(user, socket);
   console.log(`${userName} has joined the chat.`);
 
   // Get a list of all users in the room and send to the client that just connected
@@ -120,8 +120,10 @@ wss.on("connection", (socket, req) => {
     })
   );
 
+  // This should send obj { userName, userID }
+  // Then client can add that instead of just the name
   currentRoom.users.forEach((ws) => {
-    ws.send(JSON.stringify({ connected: userName }));
+    ws.send(JSON.stringify({ connected: user }));
   });
 
   socket.on("message", (clientMessage) => {
@@ -164,10 +166,10 @@ wss.on("connection", (socket, req) => {
 
   socket.on("close", () => {
     console.log(`${userName} has left the chat.`);
-    currentRoom.users.delete(userName);
+    currentRoom.users.delete(user);
 
     currentRoom.users.forEach((ws) => {
-      ws.send(JSON.stringify({ disconnected: userName }));
+      ws.send(JSON.stringify({ disconnected: user }));
     });
 
     // Rooms don't get cleaned up here because it can nuke

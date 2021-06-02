@@ -103,7 +103,7 @@ function createRoom(req, res) {
   roomObj.createRoom({
     id: roomID,
     name: req.body.name,
-    video: "https://www.youtube.com/watch?v=2JGb3O8ql1U",
+    video: req.body.url,
   });
 
   // Make sure it's there, might not need

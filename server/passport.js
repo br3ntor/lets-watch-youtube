@@ -28,7 +28,11 @@ passport.use(
 // Adds user object to the session
 // Runs on login and signup, saves session to redis, deserialize below loads from redis
 passport.serializeUser((user, cb) => {
-  user.password = "";
+  // Hmm what if I delete the prop instead...
+  // user.password = "";
+  delete user.password;
+  // Hmm do I really need this to reach this point?
+  delete user.p_key;
   cb(null, user);
 });
 
