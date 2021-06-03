@@ -6,6 +6,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import CardMedia from "@material-ui/core/CardMedia";
 
 const useStyles = makeStyles({
   root: {
@@ -25,20 +26,31 @@ const useStyles = makeStyles({
   link: {
     textDecoration: "none",
   },
+  media: {
+    height: 140,
+  },
 });
 
-export default function RoomCard({ roomID, users, video, name }) {
+export default function RoomCard({
+  roomID,
+  users,
+  video,
+  name,
+  imgURL,
+  vidTitle,
+}) {
   const classes = useStyles();
 
   return (
     <Card className={classes.root}>
+      <CardMedia className={classes.media} image={imgURL} title={vidTitle} />
       <CardContent>
         <Typography variant="h5" component="h2">
           {name}
         </Typography>
         <Typography className={classes.pos}>{users.length} watching</Typography>
         <Typography variant="body2" component="p">
-          {video}
+          {vidTitle}
         </Typography>
       </CardContent>
       <CardActions>

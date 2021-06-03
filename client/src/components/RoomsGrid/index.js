@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 export default function RoomsGrid() {
   const [rooms, setRooms] = useState(false);
   const { user, setUser } = useAuth();
+  // const [videoThumbnails, setVideoThumbnails] = useState([]);
 
   const classes = useStyles();
 
@@ -29,6 +30,35 @@ export default function RoomsGrid() {
       try {
         const response = await fetch("/getrooms");
         const rooms = await response.json();
+        // setRooms(rooms);
+
+        // Gonna try calling yt right after to get thumbnails and attack those to room obj.
+        const videoIDs = rooms.map((r) => {
+          const url = new URL(r.video);
+
+          if (url.host === "youtu.be") {
+            return url.pathname.slice(1);
+          }
+
+          const videoParam = url.searchParams;
+          return videoParam.get("v");
+        });
+        console.log(videoIDs);
+        const vidData = await getVideoData(videoIDs);
+        console.log(vidData);
+
+        for (let i = 0; i < vidData.items.length; i++) {
+          const thumbnail = vidData.items[i].snippet.thumbnails.standard.url;
+          const vidTitle = vidData.items[i].snippet.localized.title;
+          rooms[i].thumbnail = thumbnail;
+          rooms[i].vidTitle = vidTitle;
+        }
+        // const thumbnails = vidData.items.map(
+        //   (vid) => vid.snippet.thumbnails.standard.url
+        // );
+        // rooms.forEach((r, i) => (r.thumbnail = thumbnails[i]));
+        // console.log(thumbnails);
+
         setRooms(rooms);
       } catch (e) {
         console.error(e);
@@ -57,23 +87,29 @@ export default function RoomsGrid() {
     }
   }, [rooms, user, setUser]);
 
-  useEffect(() => {
-    if (Object.keys(rooms).length > 0) {
-      console.log("Make Youtube API call for pics, title, etc.", rooms);
-      const videoIDs = rooms.map((r) => {
-        const url = new URL(r.video);
+  // Get thumbnails from youtube
+  // useEffect(() => {
+  //   if (Object.keys(rooms).length > 0) {
+  //     console.log("Make Youtube API call for pics, title, etc.", rooms);
+  //     const videoIDs = rooms.map((r) => {
+  //       const url = new URL(r.video);
 
-        if (url.host === "youtu.be") {
-          return url.pathname.slice(1);
-        }
+  //       if (url.host === "youtu.be") {
+  //         return url.pathname.slice(1);
+  //       }
 
-        const videoParam = url.searchParams;
-        return videoParam.get("v");
-      });
-      console.log(videoIDs);
-      getVideoData(videoIDs).then((data) => console.log(data));
-    }
-  }, [rooms]);
+  //       const videoParam = url.searchParams;
+  //       return videoParam.get("v");
+  //     });
+  //     console.log(videoIDs);
+  //     getVideoData(videoIDs).then((data) => {
+  //       const thumbnails = data.items.map(
+  //         (vid) => vid.snippet.thumbnails.standard.url
+  //       );
+  //       console.log(thumbnails);
+  //     });
+  //   }
+  // }, [rooms]);
 
   return (
     <div className={classes.root}>
@@ -87,6 +123,8 @@ export default function RoomsGrid() {
                 roomID={r.id}
                 video={r.video}
                 name={r.name}
+                imgURL={r.thumbnail}
+                vidTitle={r.vidTitle}
               />
             </Grid>
           ))}
