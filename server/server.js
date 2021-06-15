@@ -27,7 +27,7 @@ const seshOptions = {
   saveUninitialized: false,
   secret: process.env.SESSION_SECRET, // Hover over secret key for popup info for prod
   resave: false,
-  cookie: { maxAge: 60000 * 120 },
+  cookie: { maxAge: 60000 * 120, sameSite: true },
   name: process.env.SESSION_NAME,
 };
 
@@ -38,18 +38,20 @@ if (app.get("env") === "production") {
 
 const sessionParser = session(seshOptions);
 
-// app.use(helmet());
-// app.use(
-//   helmet.contentSecurityPolicy({
-//     useDefaults: true,
-//     // reportOnly: true,
-//     directives: {
-//       "script-src": ["'self'", "'unsafe-inline'", "www.youtube.com"],
-//       "style-src": ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-//       "frame-src": ["'self'", "www.youtube.com", "youtube.com"],
-//     },
-//   })
-// );
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "script-src": ["'self'", "https://*.youtube.com"],
+        "connect-src": ["'self'", "https://*.googleapis.com"],
+        "img-src": ["'self'", "https://*.ytimg.com"],
+        "frame-src": ["https://*.youtube.com"],
+      },
+    },
+  })
+);
+
 app.use(morgan("tiny"));
 app.use(express.static("build"));
 app.use(express.json());
@@ -193,14 +195,23 @@ const gracefulShutdown = () => {
   wss.close(() => {
     console.log("Wss shut down!");
 
-    redisClient.quit(() => {
-      console.log("Redis client shut down!");
-
-      server.close(() => {
-        console.log("Express shut down!");
-      });
+    server.close(() => {
+      console.log("Express shut down!");
     });
   });
+
+  // Hmm,I don't think I need to handle the redis or postgres here.
+  // wss.close(() => {
+  //   console.log("Wss shut down!");
+
+  //   redisClient.quit(() => {
+  //     console.log("Redis client shut down!");
+
+  //     server.close(() => {
+  //       console.log("Express shut down!");
+  //     });
+  //   });
+  // });
 };
 
 process.on("SIGTERM", gracefulShutdown);

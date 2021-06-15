@@ -6,13 +6,14 @@ class Room {
   }
 }
 
+// Not sure if its best to have rooms as id props on object?
+// Or if id should be in room and store collection of rooms in array?
+// Possibly a Map would be best?
 const rooms = {
   default1: new Room(
     "Default room",
     "https://www.youtube.com/watch?v=OvqJGBopcwc"
   ),
-  // default2: new Room("Default-2: Sky News Live"),
-  // default3: new Room("Default-3: Sky News Live"),
 };
 
 function createRoom({ id, name, video }) {

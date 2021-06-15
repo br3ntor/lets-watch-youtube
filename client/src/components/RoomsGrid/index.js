@@ -44,20 +44,20 @@ export default function RoomsGrid() {
           return videoParam.get("v");
         });
         console.log(videoIDs);
+
+        // Might be better to do this in two functions/effects/renders, like I had it originally.
         const vidData = await getVideoData(videoIDs);
         console.log(vidData);
 
+        // Adding title and thumbnail to room objects from youtube API call
         for (let i = 0; i < vidData.items.length; i++) {
-          const thumbnail = vidData.items[i].snippet.thumbnails.standard.url;
+          const pic = vidData.items[i].snippet.thumbnails;
+          const thumbnail =
+            pic.standard?.url || pic.high?.url || pic.medium?.url;
           const vidTitle = vidData.items[i].snippet.localized.title;
           rooms[i].thumbnail = thumbnail;
           rooms[i].vidTitle = vidTitle;
         }
-        // const thumbnails = vidData.items.map(
-        //   (vid) => vid.snippet.thumbnails.standard.url
-        // );
-        // rooms.forEach((r, i) => (r.thumbnail = thumbnails[i]));
-        // console.log(thumbnails);
 
         setRooms(rooms);
       } catch (e) {
@@ -87,6 +87,7 @@ export default function RoomsGrid() {
     }
   }, [rooms, user, setUser]);
 
+  // Might take this out and keep above, not sure yet
   // Get thumbnails from youtube
   // useEffect(() => {
   //   if (Object.keys(rooms).length > 0) {
