@@ -25,7 +25,7 @@ const roomObj = require("./rooms");
 const seshOptions = {
   store: new RedisStore({ client: redisClient }),
   saveUninitialized: false,
-  secret: process.env.SESSION_SECRET, // Hover over secret key for popup info for prod
+  secret: process.env.SESSION_SECRET,
   resave: false,
   cookie: { maxAge: 60000 * 120, sameSite: true },
   name: process.env.SESSION_NAME,
@@ -44,11 +44,16 @@ app.use(
       useDefaults: true,
       directives: {
         "script-src": ["'self'", "https://*.youtube.com"],
+        // "script-src": ["https://www.youtube.com/iframe_api"],
         "connect-src": ["'self'", "https://*.googleapis.com"],
         "img-src": ["'self'", "https://*.ytimg.com"],
         "frame-src": ["https://*.youtube.com"],
       },
     },
+    crossOriginResourcePolicy: true,
+    crossOriginOpenerPolicy: true,
+    // crossOriginEmbedderPolicy: true,
+    originAgentCluster: true,
   })
 );
 
@@ -122,12 +127,16 @@ wss.on("connection", (socket, req) => {
     })
   );
 
-  // This should send obj { userName, userID }
-  // Then client can add that instead of just the name
+  // Send all members in the room the newly connected clients info
   currentRoom.users.forEach((ws) => {
     ws.send(JSON.stringify({ connected: user }));
   });
 
+  // Now we setup a message system
+  // Both for chat messages and video control messages
+  // So those two types and potentially more
+  // This area below needs to be reworked/abstracted
+  // Cleaned up, refactored etc.
   socket.on("message", (clientMessage) => {
     const socketMessage = JSON.parse(clientMessage);
 
@@ -142,6 +151,7 @@ wss.on("connection", (socket, req) => {
       });
     }
 
+    // Maybe a lazy way to authenticate, will have to think about it, but not now of course.
     // These video controls messages can only be performed by the creator/host of the room
     const lastSegmentOfUserId = userID.split("-").slice(-1)[0];
     if (roomID === lastSegmentOfUserId) {
