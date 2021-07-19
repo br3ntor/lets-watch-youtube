@@ -44,11 +44,13 @@ app.use(
       useDefaults: true,
       directives: {
         "script-src": ["'self'", "https://*.youtube.com"],
-        // "script-src": ["https://www.youtube.com/iframe_api"],
         "connect-src": ["'self'", "https://*.googleapis.com"],
         "img-src": ["'self'", "https://*.ytimg.com"],
         "frame-src": ["https://*.youtube.com"],
       },
+    },
+    hsts: {
+      maxAge: 63072000,
     },
     crossOriginResourcePolicy: true,
     crossOriginOpenerPolicy: true,

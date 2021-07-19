@@ -37,7 +37,7 @@ function login(req, res, next) {
         return next(err);
       }
 
-      return res.send({ id: user.id, name: user.name });
+      return res.send(user);
     });
   })(req, res, next);
 }
