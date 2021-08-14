@@ -13,10 +13,12 @@ services:
     # Debugger setup from https://docs.docker.com/language/nodejs/develop/#connect-a-debugger
     # I can setup debugger in VS Code with the following info, but for now things are ok.
     # https://code.visualstudio.com/docs/remote/containers
-    command: npm run debug
+    # command: npm run debug
 
   redis:
     image: redis:6-alpine
+    ports:
+      - 6379:6379
 
   postgres:
     image: postgres:13-alpine
@@ -26,6 +28,7 @@ services:
       - postgresdb:/var/lib/postgresql/data
     ports:
       - 5434:5432
+      # Not sure why this differs here, I wonder if it's necessary...
 
 volumes:
   postgresdb:

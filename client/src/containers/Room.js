@@ -51,6 +51,8 @@ export default function Room() {
   const [playlist, setPlaylist] = useState([]);
 
   const protocol = window.location.hostname === "localhost" ? "ws" : "wss";
+  // This causes dev env to only work with react dev server on port 3000, express serving the build
+  // won't have the right ... actually I'm not sure the reason it works on 3000 and not 4000
   const port = window.location.hostname === "localhost" ? ":4000" : "";
   const socketUrl = `${protocol}://${window.location.hostname}${port}/${room}`;
 
@@ -69,7 +71,7 @@ export default function Room() {
       onOpen: () => console.log("opened"),
       onError: (e) => console.error(e),
       shouldReconnect: () => true,
-      reconnectAttempts: 1,
+      reconnectAttempts: 10,
       onReconnectStop: () => {
         // There seem to be a few ways I could do this...
         history.push("/");

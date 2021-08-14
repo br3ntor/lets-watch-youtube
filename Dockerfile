@@ -7,7 +7,7 @@ RUN npm install --production
 COPY client/ .
 RUN npm run build
 
-FROM node:16-alpine
+FROM node:current
 WORKDIR /app
 COPY ["server/package.json", "server/package-lock.json*", "./"]
 RUN npm install --production

@@ -45,7 +45,8 @@ app.use(
       directives: {
         "script-src": ["'self'", "https://*.youtube.com"],
         "connect-src": ["'self'", "https://*.googleapis.com"],
-        "img-src": ["'self'", "https://*.ytimg.com"],
+        // "img-src": ["'self'", "https://*.ytimg.com"],
+        "img-src": ["*"],
         "frame-src": ["https://*.youtube.com"],
       },
     },
@@ -204,12 +205,9 @@ server.listen(port, () => {
 const gracefulShutdown = () => {
   console.log("Starting shutdown of express...");
 
-  wss.close(() => {
-    console.log("Wss shut down!");
-
-    server.close(() => {
-      console.log("Express shut down!");
-    });
+  server.close(() => {
+    console.log("Express shut down!");
+    process.exit(0);
   });
 
   // Hmm,I don't think I need to handle the redis or postgres here.
@@ -227,4 +225,11 @@ const gracefulShutdown = () => {
 };
 
 process.on("SIGTERM", gracefulShutdown);
-process.on("SIGINT", gracefulShutdown);
+// process.on("SIGINT", gracefulShutdown);
+
+process.once("SIGUSR2", function () {
+  console.log("This is the signal nodemon uses to restart.");
+  // gracefulShutdown(function () {
+  //   process.kill(process.pid, 'SIGUSR2');
+  // });
+});

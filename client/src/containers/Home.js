@@ -54,6 +54,11 @@ export default function Home() {
         <h1>Welcome, please sign in.</h1>
       )}
       <RoomsGrid />
+      <img
+        src="http://animalsbreeds.com/wp-content/uploads/2014/12/American-Pit-Bull-Terrier-5.jpg"
+        alt="pitbull"
+        width="50%"
+      />
     </Container>
   );
 }
