@@ -5,6 +5,7 @@ const WebSocket = require("ws");
 const session = require("express-session");
 const redis = require("redis");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 
 let RedisStore = require("connect-redis")(session);
 let redisClient = redis.createClient(6379, "redis");
@@ -63,11 +64,11 @@ app.use(
 app.use(morgan("tiny"));
 app.use(express.static("build"));
 app.use(express.json());
+app.use(cookieParser());
 app.use(sessionParser);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(router);
-
 /**
  * Create an HTTP server.
  */
@@ -227,9 +228,9 @@ const gracefulShutdown = () => {
 process.on("SIGTERM", gracefulShutdown);
 // process.on("SIGINT", gracefulShutdown);
 
-process.once("SIGUSR2", function () {
-  console.log("This is the signal nodemon uses to restart.");
-  // gracefulShutdown(function () {
-  //   process.kill(process.pid, 'SIGUSR2');
-  // });
-});
+// process.once("SIGUSR2", function () {
+// console.log("This is the signal nodemon uses to restart.");
+// gracefulShutdown(function () {
+//   process.kill(process.pid, 'SIGUSR2');
+// });
+// });

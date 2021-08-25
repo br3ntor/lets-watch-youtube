@@ -3,6 +3,7 @@ version: "3.8"
 services:
   lets-watch:
     build:
+      # Hmm, I might want the context to be ./server, or maybe not...
       context: .
     ports:
       - 4000:4000
@@ -13,7 +14,7 @@ services:
     # Debugger setup from https://docs.docker.com/language/nodejs/develop/#connect-a-debugger
     # I can setup debugger in VS Code with the following info, but for now things are ok.
     # https://code.visualstudio.com/docs/remote/containers
-    # command: npm run debug
+    command: npm run debug
 
   redis:
     image: redis:6-alpine

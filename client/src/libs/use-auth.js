@@ -35,12 +35,14 @@ function useProvideAuth() {
     }
   };
 
+  // TODO: Change these functions to reflect server, login/logout
   const signin = async (username, password) => {
     try {
       const response = await fetch("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "CSRF-Token": document.cookie.split("=")[1],
         },
         body: JSON.stringify({ username, password }),
       });
