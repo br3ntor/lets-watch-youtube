@@ -25,7 +25,7 @@ const roomObj = require("./rooms");
 //
 const seshOptions = {
   store: new RedisStore({ client: redisClient }),
-  saveUninitialized: false,
+  saveUninitialized: false, // CSRF on req.session seems to effect this
   secret: process.env.SESSION_SECRET,
   resave: false,
   cookie: { maxAge: 60000 * 120, sameSite: true },
@@ -46,7 +46,6 @@ app.use(
       directives: {
         "script-src": ["'self'", "https://*.youtube.com"],
         "connect-src": ["'self'", "https://*.googleapis.com"],
-        // "img-src": ["'self'", "https://*.ytimg.com"],
         "img-src": ["*"],
         "frame-src": ["https://*.youtube.com"],
       },
@@ -56,6 +55,7 @@ app.use(
     },
     crossOriginResourcePolicy: true,
     crossOriginOpenerPolicy: true,
+    // Requires remote resoursce to whitelist me basically I think
     // crossOriginEmbedderPolicy: true,
     originAgentCluster: true,
   })
@@ -69,6 +69,7 @@ app.use(sessionParser);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(router);
+
 /**
  * Create an HTTP server.
  */
@@ -87,7 +88,7 @@ server.on("upgrade", (req, socket, head) => {
     const roomID = req.url.slice(1);
     const room = roomObj.rooms[roomID];
 
-    if (!user) {
+    if (!user || !room) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
@@ -95,11 +96,12 @@ server.on("upgrade", (req, socket, head) => {
 
     // If I restart server, the room object is destroyed but the session remains valid because redis
     // These are only seperate because it seemed easier to test manually, could combine with an ||
-    if (!room) {
-      socket.write("HTTP/1.1 401 Hello\r\n\r\n");
-      socket.destroy();
-      return;
-    }
+    // I guess I'll do that, I don't see why not...
+    // if (!room) {
+    //   socket.write("HTTP/1.1 401 Hello\r\n\r\n");
+    //   socket.destroy();
+    //   return;
+    // }
 
     console.log("Session found, connecting to chat...");
 

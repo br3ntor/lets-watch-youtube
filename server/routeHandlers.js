@@ -11,7 +11,7 @@ const roomObj = require("./rooms");
  */
 function session(req, res) {
   if (!req.user) {
-    res.cookie("XSRF-TOKEN", req.csrfToken());
+    res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
     return res.sendStatus(401);
   }
   console.log(req.session.cookie._expires);
