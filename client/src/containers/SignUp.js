@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
-import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import Typography from "@mui/material/Typography";
+import makeStyles from '@mui/styles/makeStyles';
+import Container from "@mui/material/Container";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { useFormFields } from "../libs/use-formFields";
 import { useAuth } from "../libs/use-auth.js";
@@ -112,7 +112,7 @@ export default function SignUp() {
             {!loading ? "Sign up" : <CircularProgress size={24} />}
           </Button>
         </form>
-        <Link href="#" variant="body2">
+        <Link href="#" variant="body2" underline="hover">
           {"Already have an account? Log in"}
         </Link>
       </div>

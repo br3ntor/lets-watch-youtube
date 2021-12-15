@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import ReactPlayer from "react-player";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from '@mui/styles/makeStyles';
 
 import Tabs from "../components/Tabs";
 import { useAuth } from "../libs/use-auth.js";
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     height: `calc(100vh - 64px)`,
     overflow: "hidden", // Fix for ReactPlayer creating overflow when loading in youtube video
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down('lg')]: {
       flexDirection: "column",
     },
   },
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     width: 375,
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down('lg')]: {
       height: "70%",
       width: "unset",
     },

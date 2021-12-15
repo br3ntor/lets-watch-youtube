@@ -228,11 +228,11 @@ const gracefulShutdown = () => {
 };
 
 process.on("SIGTERM", gracefulShutdown);
-// process.on("SIGINT", gracefulShutdown);
+process.on("SIGINT", gracefulShutdown);
 
-// process.once("SIGUSR2", function () {
-// console.log("This is the signal nodemon uses to restart.");
-// gracefulShutdown(function () {
-//   process.kill(process.pid, 'SIGUSR2');
-// });
-// });
+process.once("SIGUSR2", function () {
+  console.log("This is the signal nodemon uses to restart.");
+  gracefulShutdown(function () {
+    process.kill(process.pid, "SIGUSR2");
+  });
+});

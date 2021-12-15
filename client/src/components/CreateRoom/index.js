@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
 
 import ModalBody from "./ModalBody";
 

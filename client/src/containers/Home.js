@@ -1,10 +1,10 @@
-import Container from "@material-ui/core/Container";
-import { makeStyles } from "@material-ui/core/styles";
+import Container from "@mui/material/Container";
+import makeStyles from '@mui/styles/makeStyles';
 
 import RoomsGrid from "../components/RoomsGrid";
 import CreateRoom from "../components/CreateRoom";
 import { useAuth } from "../libs/use-auth.js";
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 
 const useStyles = makeStyles((theme) => ({
   root: {

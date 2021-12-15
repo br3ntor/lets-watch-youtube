@@ -1,18 +1,18 @@
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
 
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import teal from "@material-ui/core/colors/teal";
-
+import CssBaseline from "@mui/material/CssBaseline";
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from "@mui/material/styles";
 import MyRoutes from "./MyRoutes";
-import AppBar from "./components/AppBar";
 
+import AppBar from "./components/AppBar";
 import { ProvideAuth } from "./libs/use-auth.js";
 
-const darkTheme = createMuiTheme({
+import { teal } from '@mui/material/colors';
+
+const darkTheme = createTheme(adaptV4Theme({
   palette: {
-    type: "dark",
+    mode: "dark",
     primary: {
       main: teal[500],
     },
@@ -20,18 +20,20 @@ const darkTheme = createMuiTheme({
       main: "#f44336",
     },
   },
-});
+}));
 
 export default function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <ProvideAuth>
-        <BrowserRouter>
-          <AppBar />
-          <MyRoutes />
-        </BrowserRouter>
-      </ProvideAuth>
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <ProvideAuth>
+          <BrowserRouter>
+            <AppBar />
+            <MyRoutes />
+          </BrowserRouter>
+        </ProvideAuth>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
