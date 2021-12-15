@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // MUI Core
 import { makeStyles } from "@material-ui/core/styles";
@@ -57,7 +57,7 @@ export default function MenuAppBar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { user, signout } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // Is this the way?
   const matches = useMediaQuery("(min-width:600px)");
@@ -80,7 +80,7 @@ export default function MenuAppBar() {
   const logout = async () => {
     handleClose();
     await signout();
-    history.replace("/");
+    navigate("/");
   };
 
   return (

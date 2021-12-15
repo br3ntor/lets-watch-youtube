@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import ReactPlayer from "react-player";
 import { makeStyles } from "@material-ui/core/styles";
@@ -44,7 +44,7 @@ export default function Room() {
   const classes = useStyles();
   const { user } = useAuth();
   const { room } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [videoUrl, setVideoUrl] = useState("");
@@ -74,7 +74,7 @@ export default function Room() {
       reconnectAttempts: 10,
       onReconnectStop: () => {
         // There seem to be a few ways I could do this...
-        history.push("/");
+        navigate("/");
         window.location.reload();
       },
     }

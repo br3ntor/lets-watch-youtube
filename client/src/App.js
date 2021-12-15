@@ -1,11 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import teal from "@material-ui/core/colors/teal";
 
-import Routes from "./Routes";
+import MyRoutes from "./MyRoutes";
 import AppBar from "./components/AppBar";
 
 import { ProvideAuth } from "./libs/use-auth.js";
@@ -27,10 +27,10 @@ export default function App() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <ProvideAuth>
-        <Router>
+        <BrowserRouter>
           <AppBar />
-          <Routes />
-        </Router>
+          <MyRoutes />
+        </BrowserRouter>
       </ProvideAuth>
     </ThemeProvider>
   );

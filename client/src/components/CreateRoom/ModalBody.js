@@ -1,4 +1,4 @@
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ModalBody() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const classes = useStyles();
   const { user, setUser } = useAuth();
   const [fields, handleFieldChange] = useFormFields({
@@ -48,7 +48,7 @@ export default function ModalBody() {
       setUser((prev) => {
         return { ...prev, room: room };
       });
-      history.push(`/room/${room}`);
+      navigate(`/room/${room}`);
     } catch (e) {
       console.error(e);
     }

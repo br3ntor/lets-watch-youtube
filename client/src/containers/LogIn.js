@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -46,16 +46,17 @@ export default function LogIn() {
 
   const classes = useStyles();
   const auth = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   async function submitCredentials(event) {
     event.preventDefault();
     setLoading(true);
     try {
       await auth.signin(fields.username, fields.password);
-      // FIXME: Is replace a better method to use than push?
-      const path = history.location.pathname || "/";
-      history.push(path);
+      // FIXME: Figure out what this first option did in the old api
+      // const path = history.location.pathname || "/";
+      const path = "/";
+      navigate(path);
     } catch (err) {
       console.error(err);
     }
