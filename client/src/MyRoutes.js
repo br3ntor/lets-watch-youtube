@@ -8,13 +8,30 @@ import Room from "./containers/Room";
 import { useAuth } from "./libs/use-auth.js";
 
 export default function MyRoutes() {
+  // TODO: Refactor to pattern shown in docs
+  // This routing works but a nested style is how all the examples show it in the docs.
   return (
     <Routes>
       <Route exact path="/" element={<Home />} />
-      <Route path="/login" element={<LogIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      {/* <UnauthenticatedRoute path="/login" element={<LogIn />} /> */}
-      {/* <PrivateRoute path="/room/:room" element={<Room />} /> */}
+
+      <Route
+        path="/login"
+        element={
+          <UnauthenticatedRoute>
+            <LogIn />
+          </UnauthenticatedRoute>
+        }
+      />
+
+      <Route
+        path="/signup"
+        element={
+          <UnauthenticatedRoute>
+            <SignUp />
+          </UnauthenticatedRoute>
+        }
+      />
+
       <Route
         path="/room/:room"
         element={
@@ -42,46 +59,12 @@ function RequireAuth({ children }) {
   return children;
 }
 
-// Hoisted LOL, mad haters?
-// function PrivateRoute({ children, ...rest }) {
-//   const auth = useAuth();
-//   return (
-//     <Route
-//       {...rest}
-//       render={({ location }) =>
-//         auth.user ? (
-//           children
-//         ) : (
-//           <Redirect
-//             to={{
-//               pathname: "/login",
-//               state: { from: location },
-//             }}
-//           />
-//         )
-//       }
-//     />
-//   );
-// }
+function UnauthenticatedRoute({ children }) {
+  let auth = useAuth();
 
-// // FIXME: Fix this overly complicated flow...I think
-// function UnauthenticatedRoute({ children, ...rest }) {
-//   const auth = useAuth();
-//   return (
-//     <Route
-//       {...rest}
-//       render={({ location }) =>
-//         !auth.user ? (
-//           children
-//         ) : (
-//           <Redirect
-//             to={{
-//               pathname: location.state?.from.pathname || "/",
-//               state: { from: location },
-//             }}
-//           />
-//         )
-//       }
-//     />
-//   );
-// }
+  if (auth.user) {
+    return <Navigate to="/" replace={true} />;
+  }
+
+  return children;
+}
