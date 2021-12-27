@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { styled } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 
 import Avatar from "@mui/material/Avatar";
@@ -9,31 +10,46 @@ import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Typography from "@mui/material/Typography";
-import makeStyles from '@mui/styles/makeStyles';
 import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { useFormFields } from "../libs/use-formFields";
 import { useAuth } from "../libs/use-auth.js";
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
+const PREFIX = 'SignUp';
+
+const classes = {
+  paper: `${PREFIX}-paper`,
+  avatar: `${PREFIX}-avatar`,
+  form: `${PREFIX}-form`,
+  submit: `${PREFIX}-submit`
+};
+
+const StyledContainer = styled(Container)((
+  {
+    theme
+  }
+) => ({
+  [`& .${classes.paper}`]: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  avatar: {
+
+  [`& .${classes.avatar}`]: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
-  form: {
+
+  [`& .${classes.form}`]: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
-  submit: {
+
+  [`& .${classes.submit}`]: {
     margin: theme.spacing(3, 0, 2),
-  },
+  }
 }));
 
 export default function SignUp() {
@@ -43,7 +59,7 @@ export default function SignUp() {
     password: "",
   });
 
-  const classes = useStyles();
+
   const auth = useAuth();
   const navigate = useNavigate();
 
@@ -62,7 +78,7 @@ export default function SignUp() {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <StyledContainer component="main" maxWidth="xs">
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <AssignmentOutlinedIcon />
@@ -116,6 +132,6 @@ export default function SignUp() {
           {"Already have an account? Log in"}
         </Link>
       </div>
-    </Container>
+    </StyledContainer>
   );
 }

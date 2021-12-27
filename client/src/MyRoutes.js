@@ -1,4 +1,3 @@
-// import { Route, Switch, Redirect } from "react-router-dom";
 import { Route, Routes, useLocation, Navigate } from "react-router-dom";
 import Home from "./containers/Home";
 import LogIn from "./containers/LogIn";
@@ -8,14 +7,12 @@ import Room from "./containers/Room";
 import { useAuth } from "./libs/use-auth.js";
 
 export default function MyRoutes() {
-  // TODO: Refactor to pattern shown in docs
-  // This routing works but a nested style is how all the examples show it in the docs.
   return (
     <Routes>
-      <Route exact path="/" element={<Home />} />
+      <Route path="/" element={<Home />} />
 
       <Route
-        path="/login"
+        path="login"
         element={
           <UnauthenticatedRoute>
             <LogIn />
@@ -24,7 +21,7 @@ export default function MyRoutes() {
       />
 
       <Route
-        path="/signup"
+        path="signup"
         element={
           <UnauthenticatedRoute>
             <SignUp />
@@ -33,7 +30,7 @@ export default function MyRoutes() {
       />
 
       <Route
-        path="/room/:room"
+        path="room/:room"
         element={
           <RequireAuth>
             <Room />
@@ -61,9 +58,12 @@ function RequireAuth({ children }) {
 
 function UnauthenticatedRoute({ children }) {
   let auth = useAuth();
+  let location = useLocation();
 
   if (auth.user) {
-    return <Navigate to="/" replace={true} />;
+    return (
+      <Navigate to={location.state?.from.pathname || "/"} replace={true} />
+    );
   }
 
   return children;

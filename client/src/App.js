@@ -2,15 +2,20 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 
 import CssBaseline from "@mui/material/CssBaseline";
-import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from "@mui/material/styles";
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+  adaptV4Theme,
+} from "@mui/material/styles";
 import MyRoutes from "./MyRoutes";
 
 import AppBar from "./components/AppBar";
 import { ProvideAuth } from "./libs/use-auth.js";
 
-import { teal } from '@mui/material/colors';
+import { teal } from "@mui/material/colors";
 
-const darkTheme = createTheme(adaptV4Theme({
+const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
@@ -20,7 +25,13 @@ const darkTheme = createTheme(adaptV4Theme({
       main: "#f44336",
     },
   },
-}));
+});
+
+// const darkTheme = createTheme({
+//   palette: {
+//     mode: "dark",
+//   },
+// });
 
 export default function App() {
   return (

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { styled } from "@mui/material/styles";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -7,32 +8,41 @@ import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import FormControlLabel from "@mui/material/FormControlLabel";
-// import Grid from "@mui/material/Grid";
-// import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import makeStyles from '@mui/styles/makeStyles';
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import { useFormFields } from "../libs/use-formFields";
 import { useAuth } from "../libs/use-auth.js";
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
+const PREFIX = "LogIn";
+
+const classes = {
+  paper: `${PREFIX}-paper`,
+  avatar: `${PREFIX}-avatar`,
+  form: `${PREFIX}-form`,
+  submit: `${PREFIX}-submit`,
+};
+
+const StyledContainer = styled(Container)(({ theme }) => ({
+  [`& .${classes.paper}`]: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  avatar: {
+
+  [`& .${classes.avatar}`]: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
-  form: {
+
+  [`& .${classes.form}`]: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
-  submit: {
+
+  [`& .${classes.submit}`]: {
     margin: theme.spacing(3, 0, 2),
   },
 }));
@@ -44,18 +54,16 @@ export default function LogIn() {
     password: "",
   });
 
-  const classes = useStyles();
   const auth = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function submitCredentials(event) {
     event.preventDefault();
     setLoading(true);
     try {
       await auth.signin(fields.username, fields.password);
-      // FIXME: Figure out what this first option did in the old api
-      // const path = history.location.pathname || "/";
-      const path = "/";
+      const path = location.state?.from.pathname || "/";
       navigate(path);
     } catch (err) {
       console.error(err);
@@ -63,7 +71,7 @@ export default function LogIn() {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <StyledContainer component="main" maxWidth="xs">
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -112,20 +120,8 @@ export default function LogIn() {
           >
             {!loading ? "Log In" : <CircularProgress size={24} />}
           </Button>
-          {/* <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid> */}
         </form>
       </div>
-    </Container>
+    </StyledContainer>
   );
 }

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 import { useFormFields } from "../../libs/use-formFields";
 import { useAuth } from "../../libs/use-auth.js";
@@ -39,6 +39,7 @@ export default function ModalBody() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "CSRF-Token": document.cookie.split("=")[1],
         },
         body: JSON.stringify(fields),
       };

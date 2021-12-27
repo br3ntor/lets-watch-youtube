@@ -1,35 +1,47 @@
 import { useState, useRef, useEffect } from "react";
+import { styled } from "@mui/material/styles";
 import { useParams, useNavigate } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import ReactPlayer from "react-player";
-import makeStyles from '@mui/styles/makeStyles';
 
 import Tabs from "../components/Tabs";
 import { useAuth } from "../libs/use-auth.js";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const PREFIX = "Room";
+
+const classes = {
+  root: `${PREFIX}-root`,
+  video: `${PREFIX}-video`,
+  chat: `${PREFIX}-chat`,
+  paper: `${PREFIX}-paper`,
+};
+
+const Root = styled("div")(({ theme }) => ({
+  [`&.${classes.root}`]: {
     display: "flex",
     height: `calc(100vh - 64px)`,
     overflow: "hidden", // Fix for ReactPlayer creating overflow when loading in youtube video
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       flexDirection: "column",
     },
   },
-  video: {
+
+  [`& .${classes.video}`]: {
     flexGrow: 1,
     background: "lightblue",
   },
-  chat: {
+
+  [`& .${classes.chat}`]: {
     display: "flex",
     flexDirection: "column",
     width: 375,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down("lg")]: {
       height: "70%",
       width: "unset",
     },
   },
-  paper: {
+
+  [`& .${classes.paper}`]: {
     margin: theme.spacing(1),
     flexGrow: 1,
     overflow: "auto",
@@ -41,7 +53,7 @@ export default function Room() {
   const [roomMessages, setRoomMessages] = useState([]);
   const [members, setMembers] = useState([]);
   const videoBox = useRef(null);
-  const classes = useStyles();
+
   const { user } = useAuth();
   const { room } = useParams();
   const navigate = useNavigate();
@@ -56,7 +68,6 @@ export default function Room() {
   const port = window.location.hostname === "localhost" ? ":4000" : "";
   const socketUrl = `${protocol}://${window.location.hostname}${port}/${room}`;
 
-  // history.location.pathname.split("/").slice(-1)[0]
   const userIsHost =
     user.id.split("-").slice(-1)[0] === room ? true : undefined;
 
@@ -73,7 +84,6 @@ export default function Room() {
       shouldReconnect: () => true,
       reconnectAttempts: 10,
       onReconnectStop: () => {
-        // There seem to be a few ways I could do this...
         navigate("/");
         window.location.reload();
       },
@@ -202,7 +212,7 @@ export default function Room() {
   }[readyState];
 
   return (
-    <div className={classes.root}>
+    <Root className={classes.root}>
       <div className={classes.video}>
         <ReactPlayer
           ref={videoBox}
@@ -229,6 +239,6 @@ export default function Room() {
           setPlaylist={setPlaylist}
         />
       </div>
-    </div>
+    </Root>
   );
 }

@@ -1,20 +1,30 @@
 import Container from "@mui/material/Container";
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 
 import RoomsGrid from "../components/RoomsGrid";
 import CreateRoom from "../components/CreateRoom";
 import { useAuth } from "../libs/use-auth.js";
 import Box from "@mui/material/Box";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const PREFIX = 'Home';
+
+const classes = {
+  root: `${PREFIX}-root`
+};
+
+const StyledContainer = styled(Container)((
+  {
+    theme
+  }
+) => ({
+  [`&.${classes.root}`]: {
     padding: "25px",
-  },
+  }
 }));
 
 export default function Home() {
   const { user } = useAuth();
-  const classes = useStyles();
+
 
   const roomNotCreated = ({ name }) => (
     <>
@@ -42,7 +52,7 @@ export default function Home() {
   );
 
   return (
-    <Container className={classes.root} maxWidth="lg">
+    <StyledContainer className={classes.root} maxWidth="lg">
       {/* lol this code, I wrote this haha */}
       {user ? (
         user?.room ? (
@@ -59,6 +69,6 @@ export default function Home() {
         alt="pitbull"
         width="50%"
       />
-    </Container>
+    </StyledContainer>
   );
 }

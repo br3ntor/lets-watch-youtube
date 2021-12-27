@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import Grid from "@mui/material/Grid";
 
 import RoomCard from "./RoomCard";
@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
 export default function RoomsGrid() {
   const [rooms, setRooms] = useState(false);
   const { user, setUser } = useAuth();
-  // const [videoThumbnails, setVideoThumbnails] = useState([]);
 
   const classes = useStyles();
 
@@ -30,9 +29,8 @@ export default function RoomsGrid() {
       try {
         const response = await fetch("/getrooms");
         const rooms = await response.json();
-        // setRooms(rooms);
 
-        // Gonna try calling yt right after to get thumbnails and attack those to room obj.
+        // Gonna try calling yt right after to get thumbnails and attach those to room obj.
         const videoIDs = rooms.map((r) => {
           const url = new URL(r.video);
 
@@ -86,31 +84,6 @@ export default function RoomsGrid() {
       }
     }
   }, [rooms, user, setUser]);
-
-  // Might take this out and keep above, not sure yet
-  // Get thumbnails from youtube
-  // useEffect(() => {
-  //   if (Object.keys(rooms).length > 0) {
-  //     console.log("Make Youtube API call for pics, title, etc.", rooms);
-  //     const videoIDs = rooms.map((r) => {
-  //       const url = new URL(r.video);
-
-  //       if (url.host === "youtu.be") {
-  //         return url.pathname.slice(1);
-  //       }
-
-  //       const videoParam = url.searchParams;
-  //       return videoParam.get("v");
-  //     });
-  //     console.log(videoIDs);
-  //     getVideoData(videoIDs).then((data) => {
-  //       const thumbnails = data.items.map(
-  //         (vid) => vid.snippet.thumbnails.standard.url
-  //       );
-  //       console.log(thumbnails);
-  //     });
-  //   }
-  // }, [rooms]);
 
   return (
     <div className={classes.root}>

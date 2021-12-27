@@ -7,8 +7,8 @@ const redis = require("redis");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 
-let RedisStore = require("connect-redis")(session);
-let redisClient = redis.createClient(6379, "redis");
+const RedisStore = require("connect-redis")(session);
+const redisClient = redis.createClient(6379, "redis");
 
 const passport = require("./passport");
 const router = require("./router");
@@ -19,13 +19,18 @@ const port = 4000;
 // Socket connections go in here
 const roomObj = require("./rooms");
 
+const csrf = require("csurf");
+// Can't get this to work with the cookie option set to true, nor do I understand
+// how it is different from the way I have this implemented now.
+const csrfProtection = csrf();
+
 //
 // We need the same instance of the session parser in express and
 // WebSocket server.
 //
 const seshOptions = {
   store: new RedisStore({ client: redisClient }),
-  saveUninitialized: false, // CSRF on req.session seems to effect this
+  // saveUninitialized: false, // CSRF on req.session seems to effect this
   secret: process.env.SESSION_SECRET,
   resave: false,
   cookie: { maxAge: 60000 * 120, sameSite: true },
@@ -62,13 +67,19 @@ app.use(
 );
 
 app.use(morgan("tiny"));
-app.use(express.static("build"));
+app.use(express.static("build", { index: false }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(sessionParser);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(csrfProtection);
+app.use(snoop);
 app.use(router);
+
+function snoop(req, res, next) {
+  next();
+}
 
 /**
  * Create an HTTP server.

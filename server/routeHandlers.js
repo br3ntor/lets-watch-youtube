@@ -11,6 +11,9 @@ const roomObj = require("./rooms");
  */
 function session(req, res) {
   if (!req.user) {
+    // I understand why I tried this here. Cookie developement and express env vs CRA server.
+    // Because I'm serving the app from express...and setting the xsrf cookie at sendfile.
+    // I think I will try to enable this for client-dev, logout will be broken? maybe?
     res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
     return res.sendStatus(401);
   }
@@ -88,9 +91,10 @@ function logout(req, res) {
       console.log(err);
       return;
     }
-    // I got three functions here but not sure which are necessary or in what order.
-    req.logout();
-    res.clearCookie("connect.sid");
+
+    req.logout(); // Clears session from redis
+    res.clearCookie("seshypoo4you"); // Clears cookie on client
+    res.clearCookie("XSRF-TOKEN");
     res.send({ message: `User ${name} has been logged out.` });
   });
 }
