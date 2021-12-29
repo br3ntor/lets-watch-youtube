@@ -99,20 +99,12 @@ server.on("upgrade", (req, socket, head) => {
     const roomID = req.url.slice(1);
     const room = roomObj.rooms[roomID];
 
+    // If I restart server, the room object is destroyed but the session remains valid because redis
     if (!user || !room) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
     }
-
-    // If I restart server, the room object is destroyed but the session remains valid because redis
-    // These are only seperate because it seemed easier to test manually, could combine with an ||
-    // I guess I'll do that, I don't see why not...
-    // if (!room) {
-    //   socket.write("HTTP/1.1 401 Hello\r\n\r\n");
-    //   socket.destroy();
-    //   return;
-    // }
 
     console.log("Session found, connecting to chat...");
 
@@ -121,6 +113,13 @@ server.on("upgrade", (req, socket, head) => {
     });
   });
 });
+
+/**
+ * TODO: Implement websocket message system
+ * Socket messaging system should look like this:
+ * {type: string, data: object}
+ * then maybe send those to a dispatch function?
+ */
 
 // After successful upgrade, we get the connection event from our websocket server
 wss.on("connection", (socket, req) => {

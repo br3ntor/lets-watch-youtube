@@ -6,7 +6,6 @@ import {
   createTheme,
   ThemeProvider,
   StyledEngineProvider,
-  adaptV4Theme,
 } from "@mui/material/styles";
 import MyRoutes from "./MyRoutes";
 
@@ -26,12 +25,6 @@ const darkTheme = createTheme({
     },
   },
 });
-
-// const darkTheme = createTheme({
-//   palette: {
-//     mode: "dark",
-//   },
-// });
 
 export default function App() {
   return (

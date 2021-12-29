@@ -13,7 +13,7 @@ function session(req, res) {
   if (!req.user) {
     // I understand why I tried this here. Cookie developement and express env vs CRA server.
     // Because I'm serving the app from express...and setting the xsrf cookie at sendfile.
-    // I think I will try to enable this for client-dev, logout will be broken? maybe?
+    // I think I will try to enable this for client-dev, logout will be broken? maybe? Seems to work here fine actually
     res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
     return res.sendStatus(401);
   }
