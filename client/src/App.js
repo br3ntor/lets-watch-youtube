@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { BrowserRouter } from "react-router-dom";
 
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,22 +7,15 @@ import {
   ThemeProvider,
   StyledEngineProvider,
 } from "@mui/material/styles";
-import MyRoutes from "./MyRoutes";
 
 import AppBar from "./components/AppBar";
-import { ProvideAuth } from "./libs/use-auth.js";
+import MyRoutes from "./MyRoutes";
 
-import { teal } from "@mui/material/colors";
+import { ProvideAuth } from "./libs/use-auth.js";
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
-    primary: {
-      main: teal[500],
-    },
-    secondary: {
-      main: "#f44336",
-    },
   },
 });
 

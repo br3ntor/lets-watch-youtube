@@ -1,59 +1,42 @@
+import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import { styled } from '@mui/material/styles';
+import Typography from "@mui/material/Typography";
 
 import RoomsGrid from "../components/RoomsGrid";
-import CreateRoom from "../components/CreateRoom";
+import CreateRoomDialogButton from "../components/CreateRoom";
+
 import { useAuth } from "../libs/use-auth.js";
-import Box from "@mui/material/Box";
-
-const PREFIX = 'Home';
-
-const classes = {
-  root: `${PREFIX}-root`
-};
-
-const StyledContainer = styled(Container)((
-  {
-    theme
-  }
-) => ({
-  [`&.${classes.root}`]: {
-    padding: "25px",
-  }
-}));
 
 export default function Home() {
   const { user } = useAuth();
 
-
   const roomNotCreated = ({ name }) => (
     <>
-      <h1>
+      <Typography variant="h3" gutterBottom>
         Welcome{" "}
         <Box component="span" color="primary.main">
           {name}
         </Box>
         , you may join a room or create your own.
-      </h1>
+      </Typography>
       <Box textAlign="center" m={4}>
-        <CreateRoom />
+        <CreateRoomDialogButton />
       </Box>
     </>
   );
 
   const roomCreated = ({ name }) => (
-    <h1>
+    <Typography variant="h3" gutterBottom>
       Welcome back{" "}
       <Box component="span" color="primary.main">
         {name}
       </Box>
       .
-    </h1>
+    </Typography>
   );
 
   return (
-    <StyledContainer className={classes.root} maxWidth="lg">
-      {/* lol this code, I wrote this haha */}
+    <Container maxWidth="lg">
       {user ? (
         user?.room ? (
           roomCreated(user)
@@ -61,14 +44,11 @@ export default function Home() {
           roomNotCreated(user)
         )
       ) : (
-        <h1>Welcome, please sign in.</h1>
+        <Typography variant="h2" gutterBottom>
+          Welcome, please sign in.
+        </Typography>
       )}
       <RoomsGrid />
-      <img
-        src="http://animalsbreeds.com/wp-content/uploads/2014/12/American-Pit-Bull-Terrier-5.jpg"
-        alt="pitbull"
-        width="50%"
-      />
-    </StyledContainer>
+    </Container>
   );
 }

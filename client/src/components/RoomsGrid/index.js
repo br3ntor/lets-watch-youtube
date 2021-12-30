@@ -1,28 +1,15 @@
 import { useEffect, useState } from "react";
-import makeStyles from "@mui/styles/makeStyles";
+import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 
 import RoomCard from "./RoomCard";
+
 import { useAuth } from "../../libs/use-auth.js";
-
 import getVideoData from "../../libs/youtube";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  card: {
-    padding: theme.spacing(2),
-    textAlign: "left",
-    color: theme.palette.text.secondary,
-  },
-}));
 
 export default function RoomsGrid() {
   const [rooms, setRooms] = useState(false);
   const { user, setUser } = useAuth();
-
-  const classes = useStyles();
 
   useEffect(() => {
     async function getRooms() {
@@ -86,13 +73,12 @@ export default function RoomsGrid() {
   }, [rooms, user, setUser]);
 
   return (
-    <div className={classes.root}>
+    <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={4}>
         {rooms &&
           rooms.map((r, i) => (
             <Grid item key={i} xs={12} sm={6} md={4} lg={3}>
               <RoomCard
-                className={classes.card}
                 users={r.users}
                 roomID={r.id}
                 video={r.video}
@@ -103,6 +89,6 @@ export default function RoomsGrid() {
             </Grid>
           ))}
       </Grid>
-    </div>
+    </Box>
   );
 }

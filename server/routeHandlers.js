@@ -2,7 +2,6 @@ const argon2 = require("argon2");
 
 const db = require("./postgres");
 const passport = require("./passport");
-
 const roomObj = require("./rooms");
 
 /**
@@ -82,6 +81,9 @@ async function signup(req, res) {
 
 function logout(req, res) {
   if (!req.user) {
+    res.send({
+      message: `User was logged out already because the 2h token expired.`,
+    });
     return;
   }
 
