@@ -22,6 +22,7 @@ const roomObj = require("./rooms");
 const csrf = require("csurf");
 // Can't get this to work with the cookie option set to true, nor do I understand
 // how it is different from the way I have this implemented now.
+// TRY NOT TO DEV SERVER STUFF WHILE WORKING ON REACT LOL
 const csrfProtection = csrf();
 
 //
@@ -30,7 +31,7 @@ const csrfProtection = csrf();
 //
 const seshOptions = {
   store: new RedisStore({ client: redisClient }),
-  // saveUninitialized: false, // CSRF on req.session seems to effect this
+  saveUninitialized: false, // CSRF on req.session seems to effect this
   secret: process.env.SESSION_SECRET,
   resave: false,
   cookie: { maxAge: 60000 * 120, sameSite: true },
@@ -77,6 +78,8 @@ app.use(csrfProtection);
 app.use(snoop);
 app.use(router);
 
+// Note: For some reason, while developing client side redis sets two sessions idk why
+// but seems normal I guess when served by express.
 function snoop(req, res, next) {
   next();
 }

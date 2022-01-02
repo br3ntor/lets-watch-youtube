@@ -45,6 +45,7 @@ router.post("/createroom", protected, createRoom);
 router.get("*", (req, res) => {
   console.log("Last route for catchall.");
   // res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
+  // res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
   res.sendFile("/build/index.html", { root: __dirname });
 });
 

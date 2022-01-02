@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import { styled } from '@mui/material/styles';
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
+import Box from "@mui/material/Box";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -16,61 +14,21 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useFormFields } from "../libs/use-formFields";
 import { useAuth } from "../libs/use-auth.js";
 
-const PREFIX = 'SignUp';
-
-const classes = {
-  paper: `${PREFIX}-paper`,
-  avatar: `${PREFIX}-avatar`,
-  form: `${PREFIX}-form`,
-  submit: `${PREFIX}-submit`
-};
-
-const StyledContainer = styled(Container)((
-  {
-    theme
-  }
-) => ({
-  [`& .${classes.paper}`]: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-
-  [`& .${classes.avatar}`]: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
-  },
-
-  [`& .${classes.form}`]: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-
-  [`& .${classes.submit}`]: {
-    margin: theme.spacing(3, 0, 2),
-  }
-}));
-
 export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [fields, handleFieldChange] = useFormFields({
     username: "",
     password: "",
   });
-
-
   const auth = useAuth();
   const navigate = useNavigate();
 
   async function submitCredentials(event) {
     event.preventDefault();
-
     setLoading(true);
 
     try {
       await auth.signup(fields.username, fields.password);
-      // FIXME: Is replace a better method to use than push?
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -78,17 +36,23 @@ export default function SignUp() {
   }
 
   return (
-    <StyledContainer component="main" maxWidth="xs">
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
           <AssignmentOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form onSubmit={submitCredentials} className={classes.form} noValidate>
+        <Box component="form" onSubmit={submitCredentials} sx={{ mt: 1 }}>
           <TextField
-            variant="outlined"
             margin="normal"
             required
             fullWidth
@@ -101,37 +65,28 @@ export default function SignUp() {
             value={fields.username}
           />
           <TextField
-            variant="outlined"
             margin="normal"
             required
             fullWidth
-            name="password"
-            label="Password"
-            type="password"
             id="password"
+            label="Password"
+            name="password"
+            type="password"
             autoComplete="current-password"
             onChange={handleFieldChange}
             value={fields.password}
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
-            className={classes.submit}
+            sx={{ mt: 3, mb: 2 }}
             disabled={loading}
           >
             {!loading ? "Sign up" : <CircularProgress size={24} />}
           </Button>
-        </form>
-        <Link href="#" variant="body2" underline="hover">
-          {"Already have an account? Log in"}
-        </Link>
-      </div>
-    </StyledContainer>
+        </Box>
+      </Box>
+    </Container>
   );
 }
