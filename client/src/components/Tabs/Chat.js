@@ -1,30 +1,13 @@
+// Todo: This should be refactored to be able to handle large amounds of messages.
 import { useRef, useEffect } from "react";
+
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import makeStyles from '@mui/styles/makeStyles';
 
 import MessageField from "./MessageField";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    margin: theme.spacing(1),
-    flexGrow: 1,
-    overflow: "auto",
-    wordBreak: "break-all",
-  },
-  tabs: {
-    "&  button": {
-      [theme.breakpoints.up("sm")]: {
-        minWidth: "125px", // This overides .MuiTab-root @media (min-width: 600px)
-      },
-    },
-  },
-  tabpanel: {
-    height: `calc(100% - 48px)`,
-  },
-}));
-
 export default function Chat({ connectionStatus, roomMessages, sendMessage }) {
-  const classes = useStyles();
   const chatBox = useRef(null);
 
   useEffect(() => {
@@ -34,8 +17,11 @@ export default function Chat({ connectionStatus, roomMessages, sendMessage }) {
   }, [roomMessages]);
 
   return (
-    <>
-      <div className={classes.root} ref={chatBox}>
+    <Stack height={"100%"}>
+      <Box
+        sx={{ m: 1, flexGrow: 1, overflow: "auto", wordBreak: "break-all" }}
+        ref={chatBox}
+      >
         <Typography variant="h6" gutterBottom>
           Welcome to the chat
         </Typography>
@@ -47,8 +33,8 @@ export default function Chat({ connectionStatus, roomMessages, sendMessage }) {
             {msg}
           </Typography>
         ))}
-      </div>
+      </Box>
       <MessageField sendMessage={sendMessage} />
-    </>
+    </Stack>
   );
 }

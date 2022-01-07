@@ -1,16 +1,8 @@
-// import React from "react";
 import { BrowserRouter } from "react-router-dom";
-
 import CssBaseline from "@mui/material/CssBaseline";
-import {
-  createTheme,
-  ThemeProvider,
-  StyledEngineProvider,
-} from "@mui/material/styles";
-
-import AppBar from "./components/AppBar";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import MyRoutes from "./MyRoutes";
-
+import AppBar from "./components/AppBar";
 import { ProvideAuth } from "./libs/use-auth.js";
 
 const darkTheme = createTheme({
@@ -21,16 +13,14 @@ const darkTheme = createTheme({
 
 export default function App() {
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <ProvideAuth>
-          <BrowserRouter>
-            <AppBar />
-            <MyRoutes />
-          </BrowserRouter>
-        </ProvideAuth>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline enableColorScheme />
+      <ProvideAuth>
+        <BrowserRouter>
+          <AppBar />
+          <MyRoutes />
+        </BrowserRouter>
+      </ProvideAuth>
+    </ThemeProvider>
   );
 }

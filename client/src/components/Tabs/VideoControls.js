@@ -2,7 +2,6 @@ import { useState } from "react";
 import Input from "@mui/material/Input";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import makeStyles from '@mui/styles/makeStyles';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -12,18 +11,8 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Typography from "@mui/material/Typography";
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-    textAlign: "center",
-  },
-}));
-
 export default function VideoControls({ sendVideoUrl, playlist, setPlaylist }) {
   const [url, setUrl] = useState("");
-  const classes = useStyles();
 
   function handleUrlChange(event) {
     setUrl(event.target.value);
@@ -49,7 +38,6 @@ export default function VideoControls({ sendVideoUrl, playlist, setPlaylist }) {
   return (
     <Container>
       <form
-        className={classes.form}
         noValidate
         autoComplete="off"
         onSubmit={(event) => {

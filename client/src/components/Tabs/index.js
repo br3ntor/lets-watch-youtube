@@ -5,7 +5,6 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import makeStyles from '@mui/styles/makeStyles';
 
 import Chat from "./Chat";
 import VideoControls from "./VideoControls";
@@ -15,19 +14,19 @@ function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div
+    <Box
+      sx={{
+        flexGrow: 1,
+        overflow: "auto",
+      }}
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box height="100%" display="flex" flexDirection="column">
-          {children}
-        </Box>
-      )}
-    </div>
+      {value === index && children}
+    </Box>
   );
 }
 
@@ -44,26 +43,7 @@ function a11yProps(index) {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
-  chat: {
-    margin: theme.spacing(1),
-    flexGrow: 1,
-    overflow: "auto",
-    wordBreak: "break-all",
-  },
-  tabs: {
-    "&  button": {
-      [theme.breakpoints.up("sm")]: {
-        minWidth: "125px", // This overides .MuiTab-root @media (min-width: 600px)
-      },
-    },
-  },
-  tabpanel: {
-    height: `calc(100% - 48px)`,
-  },
-}));
-
-export default function SimpleTabs({
+export default function BasicTabsCustom({
   connectionStatus,
   members,
   roomMessages,
@@ -72,7 +52,6 @@ export default function SimpleTabs({
   playlist,
   setPlaylist,
 }) {
-  const classes = useStyles();
   const [value, setValue] = useState(0);
 
   const handleTabChange = (event, newValue) => {
@@ -83,7 +62,6 @@ export default function SimpleTabs({
     <>
       <Paper square>
         <Tabs
-          className={classes.tabs}
           value={value}
           onChange={handleTabChange}
           aria-label="simple tabs example"
@@ -94,17 +72,17 @@ export default function SimpleTabs({
           <Tab label="Video" {...a11yProps(2)} />
         </Tabs>
       </Paper>
-      <TabPanel value={value} index={0} className={classes.tabpanel}>
+      <TabPanel value={value} index={0}>
         <Chat
           connectionStatus={connectionStatus}
           roomMessages={roomMessages}
           sendMessage={sendMessage}
         />
       </TabPanel>
-      <TabPanel value={value} index={1} className={classes.tabpanel}>
+      <TabPanel value={value} index={1}>
         <MembersList members={members} />
       </TabPanel>
-      <TabPanel value={value} index={2} className={classes.tabpanel}>
+      <TabPanel value={value} index={2}>
         <VideoControls
           sendVideoUrl={sendVideoUrl}
           playlist={playlist}

@@ -1,29 +1,22 @@
 import { useState } from "react";
+import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-}));
 
 export default function MessageField({ sendMessage }) {
   const [message, setMessage] = useState("");
-  const classes = useStyles();
 
   function handleChange(event) {
     setMessage(event.target.value);
   }
 
   return (
-    <form
-      className={classes.root}
+    <Stack
+      m={1}
+      spacing={1}
+      direction="row"
+      component="form"
       noValidate
       autoComplete="off"
       onSubmit={(event) => {
@@ -44,6 +37,6 @@ export default function MessageField({ sendMessage }) {
       <Button variant="contained" color="primary" type="submit">
         <SendIcon />
       </Button>
-    </form>
+    </Stack>
   );
 }

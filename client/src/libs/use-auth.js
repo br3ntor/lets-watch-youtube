@@ -89,7 +89,7 @@ function useProvideAuth() {
     }
   };
 
-  // FIXME: Inconsistency in app with names signup, login, logout, signout etc
+  // FIX: Inconsistency in app with names signup, login, logout, signout etc
   const logout = async () => {
     try {
       const response = await fetch("/logout");

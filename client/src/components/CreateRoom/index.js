@@ -36,7 +36,7 @@ export default function FormDialog() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "CSRF-Token": document.cookie.split("=")[1], // FIXME: This only works if there is one cookie on document.cookie
+          "CSRF-Token": document.cookie.split("=")[1], // FIX: This only works if there is one cookie on document.cookie
         },
         body: JSON.stringify(fields),
       };

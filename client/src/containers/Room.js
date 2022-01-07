@@ -179,6 +179,8 @@ export default function Room() {
       direction={matches ? "column" : "row"}
       sx={{
         height: `calc(100vh - 64px)`,
+        // Note: A fix for ReactPlayer creating overflow when loading in youtube video
+        overflow: "hidden",
       }}
     >
       <Box sx={{ flexGrow: 1 }}>
@@ -196,7 +198,7 @@ export default function Room() {
           height="100%"
         />
       </Box>
-      <Box
+      <Stack
         sx={{
           height: { xs: "70%", md: "initial" },
           width: { sm: "initial", md: 375 },
@@ -211,7 +213,7 @@ export default function Room() {
           playlist={playlist}
           setPlaylist={setPlaylist}
         />
-      </Box>
+      </Stack>
     </Stack>
   );
 }
