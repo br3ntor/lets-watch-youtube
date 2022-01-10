@@ -109,12 +109,21 @@ export default function Room() {
       if (lastJsonMessage.hasOwnProperty("currentTime") && !userIsHost) {
         const clientsTime = videoBox.current.getCurrentTime();
         const inSync = Math.abs(lastJsonMessage.currentTime - clientsTime) < 2;
+        const plIndex = getPlaylistIndex();
 
+        // Time sync
         if (!inSync) {
           videoBox.current.seekTo(lastJsonMessage.currentTime);
-        } else {
-          console.log("Video synced to within 2 seconds.");
         }
+
+        // Playlist video sync
+        if (lastJsonMessage.pl_index !== plIndex) {
+          videoBox.current
+            .getInternalPlayer()
+            .playVideoAt(lastJsonMessage.pl_index);
+        }
+
+        console.log("Video synced to within 2 seconds.");
       }
 
       // Receive and set video url
@@ -136,6 +145,10 @@ export default function Room() {
     });
   }
 
+  function getPlaylistIndex() {
+    return videoBox.current.getInternalPlayer().getPlaylistIndex();
+  }
+
   /**
    * Video messages that host will send to server to in turn
    * send to clients to sync with the host.
@@ -149,7 +162,10 @@ export default function Room() {
   }
 
   function sendTime(prog) {
-    sendJsonMessage(prog);
+    sendJsonMessage({
+      type: "time",
+      data: { prog: prog, pl_index: getPlaylistIndex() },
+    });
   }
 
   function sendVideoUrl(url) {

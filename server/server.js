@@ -180,9 +180,14 @@ wss.on("connection", (socket, req) => {
         });
       }
 
-      if (socketMessage.hasOwnProperty("playedSeconds")) {
+      if (socketMessage.type == "time") {
         currentRoom.users.forEach((ws) => {
-          ws.send(JSON.stringify({ currentTime: socketMessage.playedSeconds }));
+          ws.send(
+            JSON.stringify({
+              currentTime: socketMessage.data.prog.playedSeconds,
+              pl_index: socketMessage.data.pl_index,
+            })
+          );
         });
       }
 
