@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 
 import RoomCard from "./RoomCard";
@@ -73,22 +72,20 @@ export default function RoomsGrid() {
   }, [rooms, user, setUser]);
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={4}>
-        {rooms &&
-          rooms.map((r, i) => (
-            <Grid item key={i} xs={12} sm={6} md={4} lg={3}>
-              <RoomCard
-                users={r.users}
-                roomID={r.id}
-                video={r.video}
-                name={r.name}
-                imgURL={r.thumbnail}
-                vidTitle={r.vidTitle}
-              />
-            </Grid>
-          ))}
-      </Grid>
-    </Box>
+    <Grid container spacing={4}>
+      {rooms &&
+        rooms.map((r, i) => (
+          <Grid item key={i} xs={12} sm={6} md={4} lg={3}>
+            <RoomCard
+              users={r.users}
+              roomID={r.id}
+              video={r.video}
+              name={r.name}
+              imgURL={r.thumbnail}
+              vidTitle={r.vidTitle}
+            />
+          </Grid>
+        ))}
+    </Grid>
   );
 }

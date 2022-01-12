@@ -71,6 +71,7 @@ function useProvideAuth() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "CSRF-Token": document.cookie.split("=")[1],
         },
         body: JSON.stringify({ username, password }),
       });
