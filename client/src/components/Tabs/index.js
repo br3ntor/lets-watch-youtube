@@ -51,6 +51,7 @@ export default function BasicTabsCustom({
   sendVideoUrl,
   playlist,
   setPlaylist,
+  playing,
 }) {
   const [value, setValue] = useState(0);
 
@@ -87,6 +88,7 @@ export default function BasicTabsCustom({
           sendVideoUrl={sendVideoUrl}
           playlist={playlist}
           setPlaylist={setPlaylist}
+          playing={playing}
         />
       </TabPanel>
     </>

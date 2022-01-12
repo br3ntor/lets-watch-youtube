@@ -228,6 +228,7 @@ export default function Room() {
           sendVideoUrl={sendVideoUrl}
           playlist={playlist}
           setPlaylist={setPlaylist}
+          playing={isPlaying}
         />
       </Stack>
     </Stack>
