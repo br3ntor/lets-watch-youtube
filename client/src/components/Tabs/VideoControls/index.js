@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
+import Divider from "@mui/material/Divider";
 
 import MediaControlCard from "./MediaControlCard";
 
@@ -12,6 +13,7 @@ export default function VideoControls({
   playlist,
   setPlaylist,
   playing,
+  playingURL,
 }) {
   const [url, setUrl] = useState("");
 
@@ -45,6 +47,7 @@ export default function VideoControls({
       <Button sx={{ mb: 2 }} variant="contained" onClick={queVideo} fullWidth>
         Que
       </Button>
+      <Divider sx={{ mb: 2 }} />
       <Stack spacing={1}>
         {playlist.length ? (
           playlist.map((plItem, i) => (
@@ -52,7 +55,7 @@ export default function VideoControls({
               key={i}
               playVid={() => sendVideoUrl(plItem)}
               deleteVideo={() => deleteVideo(i)}
-              playing={playing}
+              playing={playing && playingURL === plItem}
             />
           ))
         ) : (

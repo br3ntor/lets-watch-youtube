@@ -36,7 +36,7 @@ export default function Home() {
   );
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ my: 2 }}>
       {user ? (
         user?.room ? (
           roomCreated(user)

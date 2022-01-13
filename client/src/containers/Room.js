@@ -229,6 +229,7 @@ export default function Room() {
           playlist={playlist}
           setPlaylist={setPlaylist}
           playing={isPlaying}
+          playingURL={videoUrl}
         />
       </Stack>
     </Stack>

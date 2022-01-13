@@ -52,6 +52,7 @@ export default function BasicTabsCustom({
   playlist,
   setPlaylist,
   playing,
+  playingURL,
 }) {
   const [value, setValue] = useState(0);
 
@@ -89,6 +90,7 @@ export default function BasicTabsCustom({
           playlist={playlist}
           setPlaylist={setPlaylist}
           playing={playing}
+          playingURL={playingURL}
         />
       </TabPanel>
     </>
