@@ -8,6 +8,8 @@ import Divider from "@mui/material/Divider";
 
 import MediaControlCard from "./MediaControlCard";
 
+import getVideoData from "libs/youtube";
+
 export default function VideoControls({
   sendVideoUrl,
   playlist,
@@ -21,9 +23,17 @@ export default function VideoControls({
     setUrl(event.target.value);
   }
 
-  function queVideo(event) {
+  async function queVideo(event) {
     if (url) {
-      setPlaylist((pl) => [...pl, url]);
+      const vidURL = new URL(url);
+      const videoParam = vidURL.searchParams;
+      const ytVidID =
+        vidURL.host === "youtu.be"
+          ? vidURL.pathname.slice(1)
+          : videoParam.get("v");
+
+      const vidData = await getVideoData(ytVidID);
+      setPlaylist((pl) => [...pl, { url: url, ...vidData }]);
       setUrl("");
     }
   }
@@ -34,7 +44,7 @@ export default function VideoControls({
   }
 
   return (
-    <Container>
+    <Container sx={{ mb: 2 }}>
       <TextField
         id="outlined-basic"
         label="Media URL"
@@ -48,14 +58,19 @@ export default function VideoControls({
         Que
       </Button>
       <Divider sx={{ mb: 2 }} />
-      <Stack spacing={1}>
+      <Stack spacing={2}>
         {playlist.length ? (
           playlist.map((plItem, i) => (
             <MediaControlCard
               key={i}
-              playVid={() => sendVideoUrl(plItem)}
+              playVid={() => sendVideoUrl(plItem.url)}
               deleteVideo={() => deleteVideo(i)}
-              playing={playing && playingURL === plItem}
+              playing={playing && playingURL === plItem.url}
+              title={plItem.items[0].snippet.title.slice(0, 50).concat("...")}
+              description={plItem.items[0].snippet.description
+                .slice(0, 50)
+                .concat("...")}
+              thumbnail={plItem.items[0].snippet.thumbnails.standard.url} // Could make a func to select correct url
             />
           ))
         ) : (

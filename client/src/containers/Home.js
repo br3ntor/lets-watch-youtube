@@ -14,7 +14,7 @@ export default function Home() {
     <>
       <Typography variant="h3" gutterBottom>
         Welcome{" "}
-        <Box component="span" color="primary.main">
+        <Box component="span" color="success.main">
           {name}
         </Box>
         , you may join a room or create your own.
@@ -28,7 +28,7 @@ export default function Home() {
   const roomCreated = ({ name }) => (
     <Typography variant="h3" gutterBottom>
       Welcome back{" "}
-      <Box component="span" color="primary.main">
+      <Box component="span" color="success.main">
         {name}
       </Box>
       .

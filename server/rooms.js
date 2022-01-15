@@ -11,8 +11,20 @@ class Room {
 // Possibly a Map would be best?
 const rooms = {
   default1: new Room(
-    "Default room",
-    "https://www.youtube.com/watch?v=OvqJGBopcwc"
+    "Default Room 1",
+    "https://www.youtube.com/watch?v=KgkxwngKMp0"
+  ),
+  default2: new Room(
+    "Default Room 2",
+    "https://www.youtube.com/watch?v=ZFzjsaU7a2s"
+  ),
+  default3: new Room(
+    "Default Room 3",
+    "https://www.youtube.com/watch?v=vQ87ccYl0fY"
+  ),
+  default4: new Room(
+    "Default Room 4",
+    "https://www.youtube.com/watch?v=5qap5aO4i9A"
   ),
 };
 

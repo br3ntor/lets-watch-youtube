@@ -177,9 +177,15 @@ export default function Room() {
   }
 
   function nextVideo(e) {
-    const url = playlist[0];
-    sendVideoUrl(url);
-    setPlaylist((pl) => pl.slice(1));
+    const currentVidIndex = playlist.indexOf(
+      playlist.filter((pl) => {
+        return pl.url === videoUrl;
+      })[0]
+    );
+
+    if (currentVidIndex < playlist.length - 1) {
+      sendVideoUrl(playlist[currentVidIndex + 1].url);
+    }
   }
 
   const connectionStatus = {

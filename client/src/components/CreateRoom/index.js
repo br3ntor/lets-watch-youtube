@@ -86,8 +86,12 @@ export default function FormDialog() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={createRoom}>Create Room</Button>
+          <Button variant="outlined" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant="outlined" onClick={createRoom}>
+            Create Room
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

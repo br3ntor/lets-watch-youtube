@@ -22,7 +22,15 @@ export default function RoomCard({
         <Typography variant="h5" component="h2">
           {name}
         </Typography>
-        <Typography gutterBottom>{users.length} watching</Typography>
+        <Typography gutterBottom>
+          <Typography
+            component="span"
+            color={users.length ? "success.main" : ""}
+          >
+            {users.length}{" "}
+          </Typography>
+          watching
+        </Typography>
         <Typography variant="body2" component="p">
           {vidTitle}
         </Typography>

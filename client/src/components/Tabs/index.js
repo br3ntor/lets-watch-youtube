@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
@@ -9,6 +9,8 @@ import Tab from "@mui/material/Tab";
 import Chat from "./Chat";
 import VideoControls from "./VideoControls";
 import MembersList from "./Members";
+
+import getVideoData from "libs/youtube";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -55,6 +57,25 @@ export default function BasicTabsCustom({
   playingURL,
 }) {
   const [value, setValue] = useState(0);
+
+  // Initialize vid controls playlist with video paired with room creation.
+  useEffect(() => {
+    async function initVidControls() {
+      if (playingURL && playlist.length === 0) {
+        const vidURL = new URL(playingURL);
+
+        const videoParam = vidURL.searchParams;
+        const ytVidID =
+          vidURL.host === "youtu.be"
+            ? vidURL.pathname.slice(1)
+            : videoParam.get("v");
+
+        const vidData = await getVideoData(ytVidID);
+        setPlaylist((pl) => [...pl, { url: playingURL, ...vidData }]);
+      }
+    }
+    initVidControls();
+  }, [playingURL, playlist, setPlaylist]);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
