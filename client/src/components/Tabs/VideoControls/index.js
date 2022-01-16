@@ -1,14 +1,17 @@
 import { useState } from "react";
-import Container from "@mui/material/Container";
+import { useParams } from "react-router-dom";
+
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
 import MediaControlCard from "./MediaControlCard";
 
 import getVideoData from "libs/youtube";
+import { useAuth } from "libs/use-auth.js";
 
 export default function VideoControls({
   sendVideoUrl,
@@ -17,6 +20,11 @@ export default function VideoControls({
   playing,
   playingURL,
 }) {
+  const { user } = useAuth();
+  const { room } = useParams();
+
+  const userIsHost = user.id.split("-").slice(-1)[0] === room;
+
   const [url, setUrl] = useState("");
 
   function handleUrlChange(event) {
@@ -33,7 +41,14 @@ export default function VideoControls({
           : videoParam.get("v");
 
       const vidData = await getVideoData(ytVidID);
-      setPlaylist((pl) => [...pl, { url: url, ...vidData }]);
+      setPlaylist((pl) => {
+        const updatedList = [...pl, { url: url, ...vidData }];
+
+        // Also add item to localStorage playlist.
+        localStorage.setItem("roomPlaylist", JSON.stringify(updatedList));
+
+        return updatedList;
+      });
       setUrl("");
     }
   }
@@ -41,11 +56,14 @@ export default function VideoControls({
   function deleteVideo(i) {
     const newList = playlist.filter((item) => item !== playlist[i]);
     setPlaylist(newList);
+    // Update localStorage with newList, overwriting playlist key
+    localStorage.setItem("roomPlaylist", JSON.stringify(newList));
   }
 
   return (
     <Container sx={{ mb: 2 }}>
       <TextField
+        disabled={!userIsHost}
         id="outlined-basic"
         label="Media URL"
         variant="outlined"
@@ -54,7 +72,13 @@ export default function VideoControls({
         fullWidth
         margin="normal"
       />
-      <Button sx={{ mb: 2 }} variant="contained" onClick={queVideo} fullWidth>
+      <Button
+        disabled={!userIsHost}
+        sx={{ mb: 2 }}
+        variant="contained"
+        onClick={queVideo}
+        fullWidth
+      >
         Que
       </Button>
       <Divider sx={{ mb: 2 }} />
@@ -62,15 +86,16 @@ export default function VideoControls({
         {playlist.length ? (
           playlist.map((plItem, i) => (
             <MediaControlCard
+              userIsHost={userIsHost}
               key={i}
               playVid={() => sendVideoUrl(plItem.url)}
               deleteVideo={() => deleteVideo(i)}
-              playing={playing && playingURL === plItem.url}
+              isPlaying={playing && playingURL === plItem.url}
               title={plItem.items[0].snippet.title.slice(0, 50).concat("...")}
               description={plItem.items[0].snippet.description
                 .slice(0, 50)
                 .concat("...")}
-              thumbnail={plItem.items[0].snippet.thumbnails.standard.url} // Could make a func to select correct url
+              thumbnails={plItem.items[0].snippet.thumbnails} // Could make a func to select correct url
             />
           ))
         ) : (

@@ -11,14 +11,18 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 export default function MediaControlCard({
   playVid,
   deleteVideo,
-  playing: isPlaying,
+  isPlaying,
   title,
   description,
-  thumbnail,
+  thumbnails,
+  userIsHost,
 }) {
+  const bestAvailableThumbnail =
+    thumbnails.standard?.url || thumbnails.high?.url || thumbnails.medium?.url;
+
   return (
     <Card>
-      <CardMedia image={thumbnail} component="img" height="140" />
+      <CardMedia image={bestAvailableThumbnail} component="img" height="140" />
       <CardContent sx={{ pt: 1.5, pb: 0 }}>
         <Typography sx={{ fontSize: "1.1rem" }} gutterBottom>
           {title}
@@ -28,14 +32,22 @@ export default function MediaControlCard({
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: "space-between" }}>
-        <IconButton aria-label="play/pause" onClick={playVid}>
+        <IconButton
+          disabled={!userIsHost}
+          aria-label="play/pause"
+          onClick={playVid}
+        >
           {isPlaying ? (
             <PauseIcon sx={{ height: 38, width: 38 }} />
           ) : (
             <PlayArrowIcon sx={{ height: 38, width: 38 }} />
           )}
         </IconButton>
-        <IconButton aria-label="delete" onClick={deleteVideo}>
+        <IconButton
+          disabled={!userIsHost}
+          aria-label="delete"
+          onClick={deleteVideo}
+        >
           <DeleteOutlineIcon sx={{ height: 38, width: 38 }} color="#f44336" />
         </IconButton>
       </CardActions>

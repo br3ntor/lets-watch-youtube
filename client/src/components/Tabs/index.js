@@ -59,6 +59,7 @@ export default function BasicTabsCustom({
   const [value, setValue] = useState(0);
 
   // Initialize vid controls playlist with video paired with room creation.
+  // Not sure if I want to limit this to host, still not commited to one consistent UX
   useEffect(() => {
     async function initVidControls() {
       if (playingURL && playlist.length === 0) {
@@ -71,6 +72,7 @@ export default function BasicTabsCustom({
             : videoParam.get("v");
 
         const vidData = await getVideoData(ytVidID);
+        // I'm adding url to the youtube video response object at the top level.
         setPlaylist((pl) => [...pl, { url: playingURL, ...vidData }]);
       }
     }

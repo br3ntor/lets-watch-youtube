@@ -133,6 +133,14 @@ export default function Room() {
     }
   }, [lastJsonMessage, userIsHost, user]);
 
+  // Load the playlist for room if it exists in localStorage
+  useEffect(() => {
+    const list = JSON.parse(localStorage.getItem("roomPlaylist"));
+    if (list && userIsHost) {
+      setPlaylist(list);
+    }
+  }, [userIsHost]);
+
   function sendMessage(message) {
     if (!user) {
       console.log("Not logged in");

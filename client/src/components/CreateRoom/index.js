@@ -54,7 +54,7 @@ export default function FormDialog() {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button variant="outlined" onClick={handleClickOpen} fullWidth>
         Create My Room
       </Button>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">

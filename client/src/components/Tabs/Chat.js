@@ -18,22 +18,28 @@ export default function Chat({ connectionStatus, roomMessages, sendMessage }) {
 
   return (
     <Stack height={"100%"}>
-      <Box
-        sx={{ m: 1, flexGrow: 1, overflow: "auto", wordBreak: "break-all" }}
-        ref={chatBox}
+      <Stack
+        sx={{
+          m: 1,
+          flexGrow: 1,
+          overflow: "auto",
+          justifyContent: "flex-end",
+        }}
       >
-        <Typography variant="h6" gutterBottom>
-          Welcome to the chat
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          The WebSocket is currently {connectionStatus}
-        </Typography>
-        {roomMessages.map((msg, i) => (
-          <Typography variant="body1" gutterBottom key={i}>
-            {msg}
+        <Box sx={{ overflow: "auto" }} ref={chatBox}>
+          <Typography variant="h6" gutterBottom>
+            Welcome to the chat
           </Typography>
-        ))}
-      </Box>
+          <Typography variant="body1" gutterBottom>
+            The WebSocket is currently {connectionStatus}
+          </Typography>
+          {roomMessages.map((msg, i) => (
+            <Typography variant="body1" gutterBottom key={i}>
+              {msg}
+            </Typography>
+          ))}
+        </Box>
+      </Stack>
       <MessageField sendMessage={sendMessage} />
     </Stack>
   );
