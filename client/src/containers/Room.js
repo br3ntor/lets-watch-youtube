@@ -1,62 +1,36 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import ReactPlayer from "react-player";
-import { makeStyles } from "@material-ui/core/styles";
+
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Tabs from "../components/Tabs";
 import { useAuth } from "../libs/use-auth.js";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    height: `calc(100vh - 64px)`,
-    overflow: "hidden", // Fix for ReactPlayer creating overflow when loading in youtube video
-    [theme.breakpoints.down("md")]: {
-      flexDirection: "column",
-    },
-  },
-  video: {
-    flexGrow: 1,
-    background: "lightblue",
-  },
-  chat: {
-    display: "flex",
-    flexDirection: "column",
-    width: 375,
-    [theme.breakpoints.down("md")]: {
-      height: "70%",
-      width: "unset",
-    },
-  },
-  paper: {
-    margin: theme.spacing(1),
-    flexGrow: 1,
-    overflow: "auto",
-    wordBreak: "break-all",
-  },
-}));
 
 export default function Room() {
   const [roomMessages, setRoomMessages] = useState([]);
   const [members, setMembers] = useState([]);
   const videoBox = useRef(null);
-  const classes = useStyles();
+
   const { user } = useAuth();
   const { room } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [videoUrl, setVideoUrl] = useState("");
   const [playlist, setPlaylist] = useState([]);
 
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
+
   const protocol = window.location.hostname === "localhost" ? "ws" : "wss";
-  // This causes dev env to only work with react dev server on port 3000, express serving the build
-  // won't have the right ... actually I'm not sure the reason it works on 3000 and not 4000
   const port = window.location.hostname === "localhost" ? ":4000" : "";
   const socketUrl = `${protocol}://${window.location.hostname}${port}/${room}`;
 
-  // history.location.pathname.split("/").slice(-1)[0]
   const userIsHost =
     user.id.split("-").slice(-1)[0] === room ? true : undefined;
 
@@ -73,8 +47,7 @@ export default function Room() {
       shouldReconnect: () => true,
       reconnectAttempts: 10,
       onReconnectStop: () => {
-        // There seem to be a few ways I could do this...
-        history.push("/");
+        navigate("/");
         window.location.reload();
       },
     }
@@ -136,12 +109,21 @@ export default function Room() {
       if (lastJsonMessage.hasOwnProperty("currentTime") && !userIsHost) {
         const clientsTime = videoBox.current.getCurrentTime();
         const inSync = Math.abs(lastJsonMessage.currentTime - clientsTime) < 2;
+        const plIndex = getPlaylistIndex();
 
+        // Time sync
         if (!inSync) {
           videoBox.current.seekTo(lastJsonMessage.currentTime);
-        } else {
-          console.log("Video synced to within 2 seconds.");
         }
+
+        // Playlist video sync
+        if (lastJsonMessage.pl_index !== plIndex) {
+          videoBox.current
+            .getInternalPlayer()
+            .playVideoAt(lastJsonMessage.pl_index);
+        }
+
+        console.log("Video synced to within 2 seconds.");
       }
 
       // Receive and set video url
@@ -150,6 +132,14 @@ export default function Room() {
       }
     }
   }, [lastJsonMessage, userIsHost, user]);
+
+  // Load the playlist for room if it exists in localStorage
+  useEffect(() => {
+    const list = JSON.parse(localStorage.getItem("roomPlaylist"));
+    if (list && userIsHost) {
+      setPlaylist(list);
+    }
+  }, [userIsHost]);
 
   function sendMessage(message) {
     if (!user) {
@@ -161,6 +151,10 @@ export default function Room() {
       type: "chat",
       data: message,
     });
+  }
+
+  function getPlaylistIndex() {
+    return videoBox.current.getInternalPlayer().getPlaylistIndex();
   }
 
   /**
@@ -176,7 +170,10 @@ export default function Room() {
   }
 
   function sendTime(prog) {
-    sendJsonMessage(prog);
+    sendJsonMessage({
+      type: "time",
+      data: { prog: prog, pl_index: getPlaylistIndex() },
+    });
   }
 
   function sendVideoUrl(url) {
@@ -188,9 +185,15 @@ export default function Room() {
   }
 
   function nextVideo(e) {
-    const url = playlist[0];
-    sendVideoUrl(url);
-    setPlaylist((pl) => pl.slice(1));
+    const currentVidIndex = playlist.indexOf(
+      playlist.filter((pl) => {
+        return pl.url === videoUrl;
+      })[0]
+    );
+
+    if (currentVidIndex < playlist.length - 1) {
+      sendVideoUrl(playlist[currentVidIndex + 1].url);
+    }
   }
 
   const connectionStatus = {
@@ -202,8 +205,15 @@ export default function Room() {
   }[readyState];
 
   return (
-    <div className={classes.root}>
-      <div className={classes.video}>
+    <Stack
+      direction={matches ? "column" : "row"}
+      sx={{
+        height: `calc(100vh - 64px)`,
+        // Note: A fix for ReactPlayer creating overflow when loading in youtube video
+        overflow: "hidden",
+      }}
+    >
+      <Box sx={{ flexGrow: 1 }}>
         <ReactPlayer
           ref={videoBox}
           onPlay={userIsHost && sendPlay}
@@ -217,8 +227,13 @@ export default function Room() {
           width="100%"
           height="100%"
         />
-      </div>
-      <div className={classes.chat}>
+      </Box>
+      <Stack
+        sx={{
+          height: { xs: "70%", md: "initial" },
+          width: { sm: "initial", md: 375 },
+        }}
+      >
         <Tabs
           connectionStatus={connectionStatus}
           roomMessages={roomMessages}
@@ -227,8 +242,10 @@ export default function Room() {
           sendVideoUrl={sendVideoUrl}
           playlist={playlist}
           setPlaylist={setPlaylist}
+          playing={isPlaying}
+          playingURL={videoUrl}
         />
-      </div>
-    </div>
+      </Stack>
+    </Stack>
   );
 }

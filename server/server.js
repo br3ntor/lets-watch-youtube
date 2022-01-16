@@ -7,8 +7,8 @@ const redis = require("redis");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 
-let RedisStore = require("connect-redis")(session);
-let redisClient = redis.createClient(6379, "redis");
+const RedisStore = require("connect-redis")(session);
+const redisClient = redis.createClient(6379, "redis");
 
 const passport = require("./passport");
 const router = require("./router");
@@ -18,6 +18,12 @@ const port = 4000;
 
 // Socket connections go in here
 const roomObj = require("./rooms");
+
+const csrf = require("csurf");
+// Can't get this to work with the cookie option set to true, nor do I understand
+// how it is different from the way I have this implemented now.
+// TRY NOT TO DEV SERVER STUFF WHILE WORKING ON REACT LOL
+const csrfProtection = csrf();
 
 //
 // We need the same instance of the session parser in express and
@@ -62,13 +68,21 @@ app.use(
 );
 
 app.use(morgan("tiny"));
-app.use(express.static("build"));
+app.use(express.static("build", { index: false }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(sessionParser);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(csrfProtection);
+app.use(snoop);
 app.use(router);
+
+// Note: For some reason, while developing client side redis sets two sessions idk why
+// but seems normal I guess when served by express.
+function snoop(req, res, next) {
+  next();
+}
 
 /**
  * Create an HTTP server.
@@ -88,20 +102,12 @@ server.on("upgrade", (req, socket, head) => {
     const roomID = req.url.slice(1);
     const room = roomObj.rooms[roomID];
 
+    // If I restart server, the room object is destroyed but the session remains valid because redis
     if (!user || !room) {
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;
     }
-
-    // If I restart server, the room object is destroyed but the session remains valid because redis
-    // These are only seperate because it seemed easier to test manually, could combine with an ||
-    // I guess I'll do that, I don't see why not...
-    // if (!room) {
-    //   socket.write("HTTP/1.1 401 Hello\r\n\r\n");
-    //   socket.destroy();
-    //   return;
-    // }
 
     console.log("Session found, connecting to chat...");
 
@@ -110,6 +116,13 @@ server.on("upgrade", (req, socket, head) => {
     });
   });
 });
+
+/**
+ * TODO: Implement websocket message system
+ * Socket messaging system should look like this:
+ * {type: string, data: object}
+ * then maybe send those to a dispatch function?
+ */
 
 // After successful upgrade, we get the connection event from our websocket server
 wss.on("connection", (socket, req) => {
@@ -167,9 +180,14 @@ wss.on("connection", (socket, req) => {
         });
       }
 
-      if (socketMessage.hasOwnProperty("playedSeconds")) {
+      if (socketMessage.type == "time") {
         currentRoom.users.forEach((ws) => {
-          ws.send(JSON.stringify({ currentTime: socketMessage.playedSeconds }));
+          ws.send(
+            JSON.stringify({
+              currentTime: socketMessage.data.prog.playedSeconds,
+              pl_index: socketMessage.data.pl_index,
+            })
+          );
         });
       }
 
@@ -228,11 +246,11 @@ const gracefulShutdown = () => {
 };
 
 process.on("SIGTERM", gracefulShutdown);
-// process.on("SIGINT", gracefulShutdown);
+process.on("SIGINT", gracefulShutdown);
 
-// process.once("SIGUSR2", function () {
-// console.log("This is the signal nodemon uses to restart.");
-// gracefulShutdown(function () {
-//   process.kill(process.pid, 'SIGUSR2');
-// });
-// });
+process.once("SIGUSR2", function () {
+  console.log("This is the signal nodemon uses to restart.");
+  gracefulShutdown(function () {
+    process.kill(process.pid, "SIGUSR2");
+  });
+});

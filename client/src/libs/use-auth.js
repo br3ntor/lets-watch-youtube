@@ -29,6 +29,7 @@ function useProvideAuth() {
       }
 
       const data = await response.json();
+      console.log("Session found.");
       setUser(data);
     } catch (e) {
       console.error(e);
@@ -36,12 +37,13 @@ function useProvideAuth() {
   };
 
   // TODO: Change these functions to reflect server, login/logout
-  const signin = async (username, password) => {
+  const login = async (username, password) => {
     try {
       const response = await fetch("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // This will only work if theres one browser cookie to grab
           "CSRF-Token": document.cookie.split("=")[1],
         },
         body: JSON.stringify({ username, password }),
@@ -69,6 +71,7 @@ function useProvideAuth() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "CSRF-Token": document.cookie.split("=")[1],
         },
         body: JSON.stringify({ username, password }),
       });
@@ -87,14 +90,22 @@ function useProvideAuth() {
     }
   };
 
-  // FIXME: Inconsistency in app with names signup, login, logout, signout etc
-  const signout = async () => {
+  // FIX: Inconsistency in app with names signup, login, logout, signout etc
+  const logout = async () => {
     try {
       const response = await fetch("/logout");
       const data = await response.json();
       console.log(data);
+
       // false over null? but null is cool, I wonder what reasoning is
       setUser(false);
+
+      // Reload on logout so if user does a signin or login after,
+      // they will have a valid csrf token. I'm not sure if I want to
+      // keep this way. Handleing this without a refresh would improve the UX
+      // but atm I'm lazy and want to move on. My attitude is becoming, build
+      // something big and buggy. But also bare minimum, they are becoming the same...
+      window.location.reload();
     } catch (e) {
       console.error(e);
     }
@@ -102,6 +113,7 @@ function useProvideAuth() {
 
   // Subscribe to user on mount
   useEffect(() => {
+    console.log("Checking for session...");
     getSession();
   }, []);
 
@@ -109,9 +121,9 @@ function useProvideAuth() {
   return {
     user,
     setUser,
-    signin,
+    signin: login,
     signup,
-    signout,
+    signout: logout,
     getSession,
   };
 }

@@ -2,7 +2,6 @@ const argon2 = require("argon2");
 
 const db = require("./postgres");
 const passport = require("./passport");
-
 const roomObj = require("./rooms");
 
 /**
@@ -11,6 +10,9 @@ const roomObj = require("./rooms");
  */
 function session(req, res) {
   if (!req.user) {
+    // I understand why I tried this here. Cookie developement and express env vs CRA server.
+    // Because I'm serving the app from express...and setting the xsrf cookie at sendfile.
+    // I think I will try to enable this for client-dev, logout will be broken? maybe? Seems to work here fine actually
     res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
     return res.sendStatus(401);
   }
@@ -79,6 +81,9 @@ async function signup(req, res) {
 
 function logout(req, res) {
   if (!req.user) {
+    res.send({
+      message: `User was logged out already because the 2h token expired.`,
+    });
     return;
   }
 
@@ -88,9 +93,10 @@ function logout(req, res) {
       console.log(err);
       return;
     }
-    // I got three functions here but not sure which are necessary or in what order.
-    req.logout();
-    res.clearCookie("connect.sid");
+
+    req.logout(); // Clears session from redis
+    res.clearCookie("seshypoo4you"); // Clears cookie on client
+    res.clearCookie("XSRF-TOKEN");
     res.send({ message: `User ${name} has been logged out.` });
   });
 }

@@ -1,69 +1,70 @@
-import { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useState, forwardRef, useMemo } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-// MUI Core
-import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import Button from "@material-ui/core/Button";
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import Stack from "@mui/material/Stack";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-// MUI Icons
-import HomeIcon from "@material-ui/icons/Home";
-import MenuIcon from "@material-ui/icons/Menu";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import ChatIcon from "@material-ui/icons/Chat";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import ChatIcon from "@mui/icons-material/Chat";
+import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
+
+// Why not?
+import PropTypes from "prop-types";
 
 import { useAuth } from "../libs/use-auth.js";
 
-const useStyles = makeStyles((theme) => ({
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-  list: {
-    width: 250,
-    "& > a": {
-      color: theme.palette.text.primary,
-      textDecoration: "none",
-    },
-  },
-  buttons: {
-    "& > *": {
-      margin: theme.spacing(1),
-      textDecoration: "inherit",
-    },
-  },
-  text: {
-    color: theme.palette.text.primary,
-    textDecoration: "none",
-  },
-}));
+// This could be it's own file,
+// make folder for the /appbar/index.js and /appbar/ListItemLink.js
+function ListItemLink(props) {
+  const { icon, primary, to, onClick } = props;
+
+  const renderLink = useMemo(
+    () =>
+      forwardRef(function Link(itemProps, ref) {
+        return <RouterLink to={to} ref={ref} {...itemProps} role={undefined} />;
+      }),
+    [to]
+  );
+
+  return (
+    <li>
+      <ListItemButton component={renderLink} onClick={onClick}>
+        {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
+        <ListItemText primary={primary} />
+      </ListItemButton>
+    </li>
+  );
+}
+ListItemLink.propTypes = {
+  icon: PropTypes.element,
+  primary: PropTypes.string.isRequired,
+  to: PropTypes.string.isRequired,
+};
 
 export default function MenuAppBar() {
-  const classes = useStyles();
+  const { user, signout } = useAuth();
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const { user, signout } = useAuth();
-  const history = useHistory();
 
   // Is this the way?
   const matches = useMediaQuery("(min-width:600px)");
   const buttonSize = matches ? "medium" : "small";
-
-  const open = Boolean(anchorEl);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -80,36 +81,37 @@ export default function MenuAppBar() {
   const logout = async () => {
     handleClose();
     await signout();
-    history.replace("/");
+    navigate("/");
   };
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static" color="default">
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
         <Toolbar>
           <IconButton
+            size="large"
             edge="start"
-            className={classes.menuButton}
             color="inherit"
             aria-label="menu"
             onClick={toggleMenu}
+            sx={{ mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Lets Watch!
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Let's Watch!
           </Typography>
           {user ? (
             <div>
               <IconButton
+                size="large"
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleMenu}
                 color="inherit"
-                size="medium"
               >
-                <AccountCircle style={{ fontSize: 40 }} />
+                <AccountCircle sx={{ fontSize: 40 }} />
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -123,7 +125,7 @@ export default function MenuAppBar() {
                   vertical: "top",
                   horizontal: "right",
                 }}
-                open={open}
+                open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
                 <MenuItem disabled onClick={handleClose}>
@@ -136,43 +138,45 @@ export default function MenuAppBar() {
               </Menu>
             </div>
           ) : (
-            <div className={classes.buttons}>
-              <Link to="/signup">
-                <Button variant="contained" size={buttonSize}>
-                  Sign up
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="contained" color="primary" size={buttonSize}>
-                  Log in
-                </Button>
-              </Link>
-            </div>
+            <Stack spacing={2} direction="row">
+              <Button
+                component={RouterLink}
+                variant="contained"
+                to="signup"
+                size={buttonSize}
+              >
+                Sign up
+              </Button>
+              <Button
+                component={RouterLink}
+                variant="contained"
+                to="login"
+                size={buttonSize}
+              >
+                Log in
+              </Button>
+            </Stack>
           )}
         </Toolbar>
       </AppBar>
       <Drawer anchor="left" open={drawerOpen} onClose={toggleMenu}>
-        <List className={classes.list}>
-          <Link to="/">
-            <ListItem button onClick={toggleMenu}>
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary="Home" />
-            </ListItem>
-          </Link>
+        <List sx={{ width: 250 }}>
+          <ListItemLink
+            to="/"
+            onClick={toggleMenu}
+            primary="Home"
+            icon={<HomeIcon />}
+          />
           {user?.room && (
-            <Link to={`/room/${user.room}`}>
-              <ListItem button onClick={toggleMenu}>
-                <ListItemIcon>
-                  <ChatIcon />
-                </ListItemIcon>
-                <ListItemText primary="My Room" />
-              </ListItem>
-            </Link>
+            <ListItemLink
+              to={`/room/${user.room}`}
+              onClick={toggleMenu}
+              primary="My Room"
+              icon={<ChatIcon />}
+            />
           )}
         </List>
       </Drawer>
-    </div>
+    </Box>
   );
 }

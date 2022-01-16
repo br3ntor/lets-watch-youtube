@@ -1,49 +1,42 @@
-import Container from "@material-ui/core/Container";
-import { makeStyles } from "@material-ui/core/styles";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
 
 import RoomsGrid from "../components/RoomsGrid";
-import CreateRoom from "../components/CreateRoom";
-import { useAuth } from "../libs/use-auth.js";
-import Box from "@material-ui/core/Box";
+import CreateRoomDialogButton from "../components/CreateRoom";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: "25px",
-  },
-}));
+import { useAuth } from "../libs/use-auth.js";
 
 export default function Home() {
   const { user } = useAuth();
-  const classes = useStyles();
 
   const roomNotCreated = ({ name }) => (
     <>
-      <h1>
+      <Typography variant="h3" gutterBottom>
         Welcome{" "}
-        <Box component="span" color="primary.main">
+        <Box component="span" color="success.main">
           {name}
         </Box>
         , you may join a room or create your own.
-      </h1>
+      </Typography>
       <Box textAlign="center" m={4}>
-        <CreateRoom />
+        <CreateRoomDialogButton />
       </Box>
     </>
   );
 
   const roomCreated = ({ name }) => (
-    <h1>
+    <Typography variant="h3" gutterBottom>
       Welcome back{" "}
-      <Box component="span" color="primary.main">
+      <Box component="span" color="success.main">
         {name}
       </Box>
       .
-    </h1>
+    </Typography>
   );
 
   return (
-    <Container className={classes.root} maxWidth="lg">
-      {/* lol this code, I wrote this haha */}
+    <Container maxWidth="lg" sx={{ my: 2 }}>
       {user ? (
         user?.room ? (
           roomCreated(user)
@@ -51,14 +44,11 @@ export default function Home() {
           roomNotCreated(user)
         )
       ) : (
-        <h1>Welcome, please sign in.</h1>
+        <Typography variant="h2" gutterBottom>
+          Welcome, please sign in.
+        </Typography>
       )}
       <RoomsGrid />
-      <img
-        src="http://animalsbreeds.com/wp-content/uploads/2014/12/American-Pit-Bull-Terrier-5.jpg"
-        alt="pitbull"
-        width="50%"
-      />
     </Container>
   );
 }

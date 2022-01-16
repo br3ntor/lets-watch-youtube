@@ -1,27 +1,20 @@
-import { makeStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import FaceIcon from "@material-ui/icons/Face";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-}));
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import FaceIcon from "@mui/icons-material/Face";
 
 export default function SimpleList({ members }) {
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
-      <List>
-        {members.map((m, i) => (
-          <ListItem key={i}>
+    <List>
+      {members.map((m, i) => (
+        <ListItem key={i}>
+          <ListItemButton>
             <ListItemIcon>
               <FaceIcon
                 // Hmm is it better to use react-router's history hook here? I don't know!
+                // FIX: The fix I'm thinking might be part of the larger system of state objects.
                 color={
                   window.location.pathname.includes(
                     m.id.split("-").slice(-1)[0]
@@ -32,9 +25,9 @@ export default function SimpleList({ members }) {
               />
             </ListItemIcon>
             <ListItemText primary={m.name} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
   );
 }
