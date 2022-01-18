@@ -12,4 +12,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          script: whoami
+          script: cd /home/br3ntor/projects/lets-watch-youtube && ./deploy.sh
