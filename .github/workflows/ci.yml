@@ -15,4 +15,4 @@ jobs:
           script: |
             cd /home/br3ntor/projects/lets-watch-youtube
             git pull
-            sudo docker-compose up -d --build
+            docker-compose up -d --build
