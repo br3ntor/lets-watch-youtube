@@ -35,11 +35,11 @@ router.post("/createroom", protected, createRoom);
 
 // Last routes
 
-// router.get("/", (req, res) => {
-//   console.log("Root / route.");
-//   res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
-//   res.sendFile("/build/index.html", { root: __dirname });
-// });
+router.get("/", (req, res) => {
+  console.log("Root / route.");
+  res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
+  res.sendFile("/build/index.html", { root: __dirname });
+});
 
 // All other get requests will be handled on the client.
 router.get("*", (req, res) => {
