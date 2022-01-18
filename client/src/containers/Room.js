@@ -135,11 +135,12 @@ export default function Room() {
 
   // Load the playlist for room if it exists in localStorage
   useEffect(() => {
-    const list = JSON.parse(localStorage.getItem("roomPlaylist"));
+    const userID = user.id.split("-").slice(-1)[0];
+    const list = JSON.parse(localStorage.getItem(userID));
     if (list && userIsHost) {
       setPlaylist(list);
     }
-  }, [userIsHost]);
+  }, [userIsHost, user]);
 
   function sendMessage(message) {
     if (!user) {

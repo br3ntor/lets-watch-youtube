@@ -45,7 +45,8 @@ export default function VideoControls({
         const updatedList = [...pl, { url: url, ...vidData }];
 
         // Also add item to localStorage playlist.
-        localStorage.setItem("roomPlaylist", JSON.stringify(updatedList));
+        const userID = user.id.split("-").slice(-1)[0];
+        localStorage.setItem(userID, JSON.stringify(updatedList));
 
         return updatedList;
       });
