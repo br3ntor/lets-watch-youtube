@@ -48,7 +48,7 @@ router.get("*", (req, res) => {
   // res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
   res.cookie("XSRF-TOKEN", req.csrfToken(), {
     sameSite: true,
-    maxAge: 60 * 60000,
+    maxAge: 24 * 60 * 60000,
   });
   res.sendFile("/build/index.html", { root: __dirname });
 });

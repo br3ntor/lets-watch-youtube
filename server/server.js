@@ -34,7 +34,7 @@ const seshOptions = {
   saveUninitialized: false, // CSRF on req.session seems to effect this
   secret: process.env.SESSION_SECRET,
   resave: false,
-  cookie: { maxAge: 60 * 60000, sameSite: true },
+  cookie: { maxAge: 24 * 60 * 60000, sameSite: true },
   name: process.env.SESSION_NAME,
 };
 
