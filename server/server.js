@@ -34,7 +34,7 @@ const seshOptions = {
   saveUninitialized: false, // CSRF on req.session seems to effect this
   secret: process.env.SESSION_SECRET,
   resave: false,
-  cookie: { maxAge: 60000 * 120, sameSite: true },
+  cookie: { maxAge: 60 * 60000, sameSite: true },
   name: process.env.SESSION_NAME,
 };
 
@@ -104,6 +104,7 @@ server.on("upgrade", (req, socket, head) => {
 
     // If I restart server, the room object is destroyed but the session remains valid because redis
     if (!user || !room) {
+      console.log("No chat 4 u");
       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
       socket.destroy();
       return;

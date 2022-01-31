@@ -35,17 +35,21 @@ router.post("/createroom", protected, createRoom);
 
 // Last routes
 
-router.get("/", (req, res) => {
-  console.log("Root / route.");
-  res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
-  res.sendFile("/build/index.html", { root: __dirname });
-});
+// Hmmm, why did I need this again?
+// router.get("/", (req, res) => {
+//   console.log("Root / route.");
+//   res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
+//   res.sendFile("/build/index.html", { root: __dirname });
+// });
 
 // All other get requests will be handled on the client.
 router.get("*", (req, res) => {
-  console.log("Last route for catchall.");
+  console.log("**********************Last route**********************");
   // res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
-  // res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
+  res.cookie("XSRF-TOKEN", req.csrfToken(), {
+    sameSite: true,
+    maxAge: 60 * 60000,
+  });
   res.sendFile("/build/index.html", { root: __dirname });
 });
 

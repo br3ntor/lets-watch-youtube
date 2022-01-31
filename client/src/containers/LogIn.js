@@ -25,6 +25,10 @@ export default function LogIn() {
 
   async function submitCredentials(event) {
     event.preventDefault();
+    if (!document.cookie) {
+      navigate("/");
+      window.location.reload();
+    }
     setLoading(true);
     try {
       await auth.signin(fields.username, fields.password);

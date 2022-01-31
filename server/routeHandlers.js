@@ -13,9 +13,13 @@ function session(req, res) {
     // I understand why I tried this here. Cookie developement and express env vs CRA server.
     // Because I'm serving the app from express...and setting the xsrf cookie at sendfile.
     // I think I will try to enable this for client-dev, logout will be broken? maybe? Seems to work here fine actually
-    // res.cookie("XSRF-TOKEN", req.csrfToken(), { sameSite: true });
+    // res.cookie("XSRF-TOKEN", req.csrfToken(), {
+    //   sameSite: true,
+    //   maxAge: 0.5 * 60000,
+    // });
     return res.sendStatus(401);
   }
+
   console.log(req.session.cookie._expires);
   res.send({
     name: req.user.name,

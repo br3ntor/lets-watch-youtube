@@ -45,10 +45,21 @@ export default function Room() {
       onOpen: () => console.log("opened"),
       onError: (e) => console.error(e),
       shouldReconnect: () => true,
+      // Having this at 0 makes the UX flow better but what if someone gets
+      // disconnected from the chat? I'll have to think about this and come
+      // Back once I clean up/simplify some stuff.
       reconnectAttempts: 10,
       onReconnectStop: () => {
         navigate("/");
         window.location.reload();
+      },
+      onClose: () => {
+        console.log("ws closed");
+
+        if (!document.cookie) {
+          navigate("/");
+          window.location.reload();
+        }
       },
     }
   );

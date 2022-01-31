@@ -32,6 +32,10 @@ export default function FormDialog() {
   async function createRoom(event) {
     event.preventDefault();
     try {
+      if (!document.cookie) {
+        window.location.reload();
+      }
+
       const options = {
         method: "POST",
         headers: {
@@ -40,6 +44,7 @@ export default function FormDialog() {
         },
         body: JSON.stringify(fields),
       };
+
       const response = await fetch("/createroom", options);
       const room = await response.text();
       console.log(room);
