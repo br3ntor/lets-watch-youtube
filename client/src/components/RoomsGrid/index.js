@@ -34,13 +34,20 @@ export default function RoomsGrid() {
         console.log(vidData);
 
         // Adding title and thumbnail to room objects from youtube API call
-        for (let i = 0; i < vidData.items.length; i++) {
-          const pic = vidData.items[i].snippet.thumbnails;
-          const thumbnail =
-            pic.standard?.url || pic.high?.url || pic.medium?.url;
-          const vidTitle = vidData.items[i].snippet.localized.title;
-          rooms[i].thumbnail = thumbnail;
-          rooms[i].vidTitle = vidTitle;
+        // Iterate over rooms we got from server state
+        // This is probably a safer solution, but also more compute
+        for (let i = 0; i < videoIDs.length; i++) {
+          const availableVidData = vidData.items.find(
+            (el) => el.id === videoIDs[i]
+          );
+          if (availableVidData) {
+            const pic = availableVidData.snippet.thumbnails;
+            const thumbnail =
+              pic.standard?.url || pic.high?.url || pic.medium?.url;
+            const vidTitle = availableVidData.snippet.localized.title;
+            rooms[i].thumbnail = thumbnail;
+            rooms[i].vidTitle = vidTitle;
+          }
         }
 
         setRooms(rooms);

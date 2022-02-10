@@ -12,7 +12,7 @@ class Room {
 const rooms = {
   default1: new Room(
     "Default Room 1",
-    "https://www.youtube.com/watch?v=KgkxwngKMp0"
+    "https://www.youtube.com/watch?v=pKKIxeMIv78"
   ),
   default2: new Room(
     "Default Room 2",
