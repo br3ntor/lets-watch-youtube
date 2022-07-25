@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   lets-watch:
+    restart: always
     build:
       context: .
     ports:
@@ -11,9 +12,11 @@ services:
       - NODE_ENV=production
 
   redis:
+    restart: always
     image: redis:6-alpine
 
   postgres:
+    restart: always
     image: postgres:13-alpine
     env_file: .env.db
     volumes:
